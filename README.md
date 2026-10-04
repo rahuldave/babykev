@@ -51,7 +51,8 @@ Three tools on the machine. This project installs everything else itself.
 | [Quarto](https://quarto.org/) | The docs site |
 
 Then `just setup`, and `just test`. `just fmt` formats the code and `just lint` checks it against the
-rules in `pyproject.toml`. `just` lists the tasks, `just help VERB` explains one, and `uv run
+rules in `pyproject.toml`. `just check` runs everything a commit must pass, and `just setup` installs it
+as a git hook, so a commit that fails a check is refused. `just` lists the tasks, `just help VERB` explains one, and `uv run
 babykev help` is the program's own help. Extra arguments go to the tool behind a recipe: `just test -k
 render` runs only the tests whose name contains `render`.
 
@@ -68,6 +69,7 @@ render` runs only the tests whose name contains `render`.
 | `LICENSE`, `NOTICE` | The licence, and the credit to kev |
 | `.python-version` | The Python version the project uses |
 | `.gitignore` | Everything a training run will write, ignored from the first commit on |
+| `.pre-commit-config.yaml`, `.yamllint` | The git hook: what every commit must pass; and the settings of the YAML linter |
 
 ## How the history is organised
 

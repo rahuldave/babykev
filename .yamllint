@@ -1,0 +1,6 @@
+# Settings for yamllint, which checks every YAML file in the repository.
+extends: default
+ignore-from-file: .gitignore
+rules:
+  line-length: {max: 100}
+  document-start: disable  # a file need not start with a line of three dashes

@@ -25,7 +25,10 @@ test = [
 ]
 dev = [{ include-group = "test" }, { include-group = "lint" }]
 lint = [
+    "pre-commit>=4.6",
     "ruff>=0.16",
+    "validate-pyproject>=0.26",
+    "yamllint>=1.38",
 ]
 
 [tool.pytest.ini_options]

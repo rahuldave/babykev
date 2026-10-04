@@ -23,10 +23,10 @@ help *verb:
         uv run {{ program }} "$1" help
     fi
 
-# Install Python and every dependency into .venv, exactly as the lockfile says
+# Install Python and every dependency into .venv, exactly as the lockfile says, and the git hook
 [group('setup')]
 setup *args:
-    {{ if args == "help" { "just help setup" } else { "uv sync --locked" } }}
+    {{ if args == "help" { "just help setup" } else { "uv sync --locked && uv run pre-commit install" } }}
 
 # Format the code, one way, no arguments. Extra arguments go to ruff: just fmt --check, just fmt --diff
 [group('quality')]
@@ -40,8 +40,32 @@ fmt *args:
 lint *args:
     {{ if args == "help" { "just help lint" } else { 'uv run ruff check "$@"' } }}
 
+# Lint the config files: the YAML files, pyproject.toml, the lockfile and this justfile
+[group('quality')]
+[no-exit-message]
+lint-config *args:
+    #!/usr/bin/env sh
+    set -e
+    if [ "$*" = help ]; then just help lint-config; exit 0; fi
+    uv run yamllint --strict .
+    uv run validate-pyproject pyproject.toml
+    uv lock --check
+    just --fmt --check --unstable
+
 # Run the tests, with coverage of src/babykev. Extra arguments go to pytest: just test -k render
 [group('quality')]
 [no-exit-message]
 test *args:
     {{ if args == "help" { "just help test" } else { 'uv run pytest "$@"' } }}
+
+# Everything a commit must pass: format, lint, the tests over the coverage floor, the config files
+[group('quality')]
+[no-exit-message]
+check *args:
+    #!/usr/bin/env sh
+    set -e
+    if [ "$*" = help ]; then just help check; exit 0; fi
+    just fmt --check
+    just lint
+    just test -q --cov-fail-under=90
+    just lint-config

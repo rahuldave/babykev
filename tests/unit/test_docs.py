@@ -56,7 +56,10 @@ class Thing:
 '''
 
 
-def example(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> str:
+def example(
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+) -> str:  # The package's name
     """Write the example package into a folder, make it importable, and return its name."""
     (tmp_path / "pkg").mkdir()
     (tmp_path / "pkg" / "__init__.py").write_text('"""The example package."""\n', encoding="utf-8")
@@ -71,7 +74,8 @@ def example(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> str:
 
 
 def test_inventory_lists_the_public_symbols_in_source_order(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """Every module, function, class and public method is listed once, with its kind and summary."""
     pkg = example(tmp_path, monkeypatch)
@@ -88,7 +92,8 @@ def test_inventory_lists_the_public_symbols_in_source_order(
 
 
 def test_inventory_knows_the_line_of_each_symbol(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """The line of a symbol is where its `def` or `class` is in the source."""
     pkg = example(tmp_path, monkeypatch)
@@ -103,7 +108,8 @@ def test_inventory_knows_the_line_of_each_symbol(
 
 
 def test_markdown_has_a_heading_a_signature_a_docstring_and_a_table_per_function(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """A function's entry shows its signature as Python and its parameters with their docments."""
     text = docs.markdown("thing", example(tmp_path, monkeypatch))
@@ -117,7 +123,8 @@ def test_markdown_has_a_heading_a_signature_a_docstring_and_a_table_per_function
 
 
 def test_markdown_writes_a_type_alias_by_its_name(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """`Pair` is written as the source wrote it, and a `None` return gets no row in the table."""
     text = docs.markdown("thing", example(tmp_path, monkeypatch))
@@ -127,7 +134,8 @@ def test_markdown_writes_a_type_alias_by_its_name(
 
 
 def test_markdown_shows_a_class_and_its_public_methods_only(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """A class is a heading and its docstring; each public method is a heading one level down."""
     text = docs.markdown("thing", example(tmp_path, monkeypatch))
@@ -137,7 +145,8 @@ def test_markdown_shows_a_class_and_its_public_methods_only(
 
 
 def test_markdown_shows_a_pydantic_model_as_a_table_of_fields(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """A model has no signature to show; its fields are the table, each with its description."""
     text = docs.markdown("thing", example(tmp_path, monkeypatch))
@@ -149,7 +158,10 @@ def test_markdown_shows_a_pydantic_model_as_a_table_of_fields(
     assert "| `label` | str \\| None | `None` |  |" in text
 
 
-def test_markdown_has_no_links_and_no_ids(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_markdown_has_no_links_and_no_ids(
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+) -> None:
     """The program's Markdown is plain: the site adds the ids and the links itself."""
     text = docs.markdown("thing", example(tmp_path, monkeypatch))
     assert "{#" not in text
@@ -158,7 +170,8 @@ def test_markdown_has_no_links_and_no_ids(tmp_path: Path, monkeypatch: pytest.Mo
 
 
 def test_an_unknown_module_is_a_lookup_error(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """Asking for a module the package does not have raises, with the name."""
     with pytest.raises(LookupError, match="nothing"):
@@ -169,7 +182,8 @@ def test_an_unknown_module_is_a_lookup_error(
 
 
 def test_gaps_names_what_each_symbol_is_missing(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """A documented symbol has no gaps; a bare one is missing its docstring, types and docments.
 
@@ -196,7 +210,8 @@ def test_gaps_names_what_each_symbol_is_missing(
 
 
 def test_a_return_that_is_not_none_needs_a_docment(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
 ) -> None:
     """`span` returns `None` and needs no docment for it; `greet` returns a value and has one."""
     pkg = example(tmp_path, monkeypatch)
@@ -212,7 +227,9 @@ def test_a_return_that_is_not_none_needs_a_docment(
 
 
 def test_check_prints_a_count_per_module_then_every_gap_and_fails(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+    capsys: pytest.CaptureFixture[str],  # Captures what the command prints
 ) -> None:
     """`check` prints one line per module, the gaps, the total, and exits 1 when there is a gap."""
     pkg = example(tmp_path, monkeypatch)
@@ -224,7 +241,9 @@ def test_check_prints_a_count_per_module_then_every_gap_and_fails(
 
 
 def test_check_holds_the_tests_to_the_convention_too(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+    capsys: pytest.CaptureFixture[str],  # Captures what the command prints
 ) -> None:
     """A folder of tests is checked like the package, each file under its path."""
     pkg = example(tmp_path, monkeypatch)
@@ -237,7 +256,9 @@ def test_check_holds_the_tests_to_the_convention_too(
 
 
 def test_list_prints_one_line_per_symbol(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+    capsys: pytest.CaptureFixture[str],  # Captures what the command prints
 ) -> None:
     """`list` prints the kind, the full name and the summary, aligned."""
     assert docs.main(["list"], example(tmp_path, monkeypatch)) == 0
@@ -247,7 +268,9 @@ def test_list_prints_one_line_per_symbol(
 
 
 def test_module_prints_the_markdown_and_an_unknown_name_is_refused(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+    capsys: pytest.CaptureFixture[str],  # Captures what the command prints
 ) -> None:
     """`module NAME` prints the Markdown; a name that is no module is refused, the modules named."""
     pkg = example(tmp_path, monkeypatch)
@@ -257,7 +280,9 @@ def test_module_prints_the_markdown_and_an_unknown_name_is_refused(
     assert "no module 'nothing'. The modules: thing" in capsys.readouterr().err
 
 
-def test_help_and_a_bad_word(capsys: pytest.CaptureFixture[str]) -> None:
+def test_help_and_a_bad_word(
+    capsys: pytest.CaptureFixture[str],  # Captures what the command prints
+) -> None:
     """`help` prints the usage and exits 0; anything else prints it to stderr and exits 2."""
     assert docs.main(["help"]) == 0
     assert capsys.readouterr().out == docs.USAGE

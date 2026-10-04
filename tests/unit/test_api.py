@@ -29,7 +29,7 @@ MILKS = {"cow": None, "goat": None, "sheep": None, "mixed": "More than one kind 
 FIRMNESS = ["Soft", "Semi-soft", "Semi-hard", "Hard"]
 
 
-def cheese_request() -> SystemOneRequest:
+def cheese_request() -> SystemOneRequest:  # A valid request with three questions
     """One request that asks a question of each type."""
     return SystemOneRequest.model_validate(
         {
@@ -47,7 +47,9 @@ def cheese_request() -> SystemOneRequest:
 
 
 @pytest.mark.parametrize("line", SAMPLE_LINES)
-def test_sample_line_fits_the_contract(line: dict[str, Any]) -> None:
+def test_sample_line_fits_the_contract(
+    line: dict[str, Any],  # One line of the sample data
+) -> None:
     """Every sample line is a valid request and gives one record question per question."""
     request = SystemOneRequest.model_validate(line)
     record, meta = to_record(request)
@@ -57,7 +59,9 @@ def test_sample_line_fits_the_contract(line: dict[str, Any]) -> None:
 
 
 @pytest.mark.parametrize("line", SAMPLE_LINES)
-def test_sample_line_has_a_usable_label_on_every_question(line: dict[str, Any]) -> None:
+def test_sample_line_has_a_usable_label_on_every_question(
+    line: dict[str, Any],  # One line of the sample data
+) -> None:
     """A label is a boolean for noul, an option name for choice, a level index for score."""
     for question in line["questions"].values():
         label = question["label"]
@@ -140,7 +144,10 @@ def test_score_with_one_level_is_rejected() -> None:
         ([{"role": "customer", "content": "hello"}], "- role: customer\n  content: hello"),
     ],
 )
-def test_render_flattens_json_into_text(value: JSONContent, text: str) -> None:
+def test_render_flattens_json_into_text(
+    value: JSONContent,  # What a request might hold
+    text: str,  # What the model should see
+) -> None:
     """Strings, numbers, lists and objects all become the text the model reads."""
     assert render(value) == text
 
@@ -154,7 +161,9 @@ def test_render_flattens_json_into_text(value: JSONContent, text: str) -> None:
     ],
 )
 def test_option_text_adds_a_description_only_when_there_is_one(
-    name: str, description: str | None, text: str
+    name: str,  # The option's name
+    description: str | None,  # Its description, if it has one
+    text: str,  # The option as the model should see it
 ) -> None:
     """An option is its name, followed by its description when it has one."""
     assert option_text(name, description) == text
@@ -285,7 +294,9 @@ def test_score_confidence_of_a_single_level_is_one() -> None:
 
 
 @pytest.mark.parametrize("level", [0, 1, 2])
-def test_score_confidence_is_one_when_certain(level: int) -> None:
+def test_score_confidence_is_one_when_certain(
+    level: int,  # The level that has all the probability
+) -> None:
     """All the probability on one level is certainty, wherever the level is."""
     p = [0.0, 0.0, 0.0]
     p[level] = 1.0

@@ -63,7 +63,7 @@ lint-config *args:
 test *args:
     {{ if args == "help" { "just help test" } else { 'uv run pytest "$@"' } }}
 
-# Everything a commit must pass: format, lint, the tests over the coverage floor, the config files
+# Everything a commit must pass: format, lint, the tests over the coverage floor, the docs, the config files
 [group('quality')]
 [no-exit-message]
 check *args:
@@ -73,6 +73,7 @@ check *args:
     just fmt --check
     just lint
     just test -q --cov-fail-under=90
+    just docs check
     just lint-config
 
 # Build the docs site into docs/_site. Words go to the program: just docs list, just docs module api, just docs check

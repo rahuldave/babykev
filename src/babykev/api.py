@@ -16,20 +16,26 @@ MAX_OPTIONS = 255
 class Noul(BaseModel):
     """A yes-or-no question."""
 
-    type: Literal["noul"]
-    instructions: JSONContent
-    criteria: dict[str, JSONContent] | None = None
+    type: Literal["noul"] = Field(description="Marks the question as yes-or-no")
+    instructions: JSONContent = Field(description="The question, as text or as structured content")
+    criteria: dict[str, JSONContent] | None = Field(
+        default=None,
+        description="What no and yes mean, under the keys `false` and `true`. May be left out",
+    )
 
 
 class Choice(BaseModel):
     """A question answered by picking one of several named options."""
 
-    type: Literal["choice"]
-    instructions: JSONContent
-    criteria: dict[str, JSONContent]
+    type: Literal["choice"] = Field(description="Marks the question as a choice")
+    instructions: JSONContent = Field(description="The question, as text or as structured content")
+    criteria: dict[str, JSONContent] = Field(
+        description="Each option's name with its description, or `null` when the name says enough"
+    )
 
     @model_validator(mode="after")
-    def _check(self) -> Self:
+    def _check(self) -> Self:  # The question, unchanged
+        """Reject a choice with no options or with more than `MAX_OPTIONS`."""
         if not 1 <= len(self.criteria) <= MAX_OPTIONS:
             raise ValueError(f"criteria must have 1..{MAX_OPTIONS} options")
         return self
@@ -38,9 +44,13 @@ class Choice(BaseModel):
 class Score(BaseModel):
     """A question answered with a level on an ordered scale."""
 
-    type: Literal["score"]
-    instructions: JSONContent
-    criteria: list[JSONContent] = Field(min_length=2, max_length=MAX_OPTIONS)
+    type: Literal["score"] = Field(description="Marks the question as a score")
+    instructions: JSONContent = Field(description="The question, as text or as structured content")
+    criteria: list[JSONContent] = Field(
+        min_length=2,
+        max_length=MAX_OPTIONS,
+        description="The levels of the scale, from lowest to highest",
+    )
 
 
 Question = Noul | Choice | Score
@@ -49,11 +59,16 @@ Question = Noul | Choice | Score
 class SystemOneRequest(BaseModel):
     """One request: a state, and the questions to answer about it."""
 
-    state: JSONContent
-    questions: dict[str, Question] = Field(min_length=1)
+    state: JSONContent = Field(description="The context: the document the questions are about")
+    questions: dict[str, Question] = Field(
+        min_length=1, description="The questions, each under an id the caller chooses"
+    )
 
 
-def render(v: JSONContent, indent: int = 0) -> str:
+def render(
+    v: JSONContent,  # Text, a number, a list or an object, from a request
+    indent: int = 0,  # How deeply nested this value is; each level indents by two spaces
+) -> str:  # The text the model sees
     """Flatten str | object | array into text the model sees. Field names are kept as labels."""
     pad = "  " * indent
     if v is None:
@@ -70,12 +85,17 @@ def render(v: JSONContent, indent: int = 0) -> str:
     )
 
 
-def option_text(name: str, desc: JSONContent) -> str:
+def option_text(
+    name: str,  # The option's name
+    desc: JSONContent,  # Its description, or `None` or an empty string when the name says enough
+) -> str:  # `name`, or `name: description`
     """Write one option as the model sees it."""
     return name if desc is None or desc == "" else f"{name}: {render(desc)}"
 
 
-def to_record(req: SystemOneRequest) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def to_record(
+    req: SystemOneRequest,  # A validated request
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:  # The record, and one metadata entry per question
     """-> internal record for encode(), plus per-question metadata to map probabilities back."""
     qs, meta = [], []
     for qid, q in req.questions.items():
@@ -100,13 +120,17 @@ def to_record(req: SystemOneRequest) -> tuple[dict[str, Any], list[dict[str, Any
     return {"state": render(req.state), "questions": qs}, meta
 
 
-def choice_confidence(p: list[float]) -> float:
+def choice_confidence(
+    p: list[float],  # The probability of each option
+) -> float:  # 0 for a guess, 1 when one option has all the probability
     """Measure how far the most likely option stands above a guess among `len(p)` options."""
     k = len(p)
     return 1.0 if k == 1 else (max(p) - 1 / k) / (1 - 1 / k)
 
 
-def score_confidence(p: list[float]) -> float:
+def score_confidence(
+    p: list[float],  # The probability of each level, lowest level first
+) -> float:  # 1 when one level has all the probability, 0 for a guess or anything as spread out
     """Measure how closely a score's probabilities sit around the most likely level.
 
     1 when one level has all the probability, 0 for a guess or anything as spread out. The expected
@@ -122,7 +146,9 @@ def score_confidence(p: list[float]) -> float:
     return max(0.0, 1.0 - spread / guess)
 
 
-def round_prob(x: float) -> float:
+def round_prob(
+    x: float,  # A probability, or a number worked out from probabilities
+) -> float:  # The same number to four decimals
     """Round a number for output.
 
     Four decimals keep a rounded distribution's sum within 0.02 of 1 even with MAX_OPTIONS options.
@@ -131,7 +157,10 @@ def round_prob(x: float) -> float:
     return round(float(x), 4)
 
 
-def to_answers(probs: list[list[float]], meta: list[dict[str, Any]]) -> dict[str, Any]:
+def to_answers(
+    probs: list[list[float]],  # For each question, the probability of each of its options
+    meta: list[dict[str, Any]],  # The metadata `to_record` returned for the same request
+) -> dict[str, Any]:  # One answer per question, under the question's id
     """Turn the model's probabilities into answers of each question's type."""
     out = {}
     for p, m in zip(probs, meta, strict=False):

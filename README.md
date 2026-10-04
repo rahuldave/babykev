@@ -62,7 +62,8 @@ agents: `just docs list` names every module, class and function with its summary
 prints one module, and `just docs check` counts what is typed and documented and lists every gap. The
 convention: every function is typed, has a docstring, and carries a docment, a comment beside each
 parameter and the return, which the formatter and the linter leave alone as long as the line fits in 100
-characters. `src/babykev/docs.py` is the example to read.
+characters. `src/babykev/docs.py` is the example to read. `just docs check` is part of `just check`, so a
+commit that leaves a gap is refused by the hook.
 
 ## What is here
 

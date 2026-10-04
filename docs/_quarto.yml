@@ -1,0 +1,20 @@
+project:
+  type: website
+  output-dir: _site
+  pre-render: python apidocs.py build  # the reference pages are generated, never edited by hand
+
+website:
+  title: "babykev"
+  sidebar:
+    contents:
+      - index.qmd
+      - section: Reference
+        contents: api/*
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+
+filters:
+  - linkify.lua

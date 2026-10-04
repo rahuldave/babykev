@@ -2,20 +2,26 @@
 
 import sys
 
+from babykev import docs
+
 HELP = """\
 babykev: a small decision model. Context, typed questions, and a probability for every answer.
 
 usage: babykev COMMAND [FLAGS]
        babykev help
 
-There are no commands yet.
+commands:
+  docs    what the code says about itself, as Markdown: docs list, docs module NAME, docs check
 """
 
 
 def main() -> None:
-    """Print the help, or refuse a command that does not exist yet."""
+    """Run the command named by the first word, print the help, or refuse any other word."""
     words = sys.argv[1:]
-    if words and words[0] not in ("help", "--help", "-h"):
-        print(f"babykev: no command named {words[0]!r}. Run `babykev help`.", file=sys.stderr)
-        raise SystemExit(2)
-    print(HELP, end="")
+    if not words or words[0] in ("help", "--help", "-h"):
+        print(HELP, end="")
+        return
+    if words[0] == "docs":
+        raise SystemExit(docs.main(words[1:]))
+    print(f"babykev: no command named {words[0]!r}. Run `babykev help`.", file=sys.stderr)
+    raise SystemExit(2)

@@ -16,6 +16,7 @@ name = "babykev"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "fastcore" },
     { name = "pydantic" },
 ]
 
@@ -40,7 +41,10 @@ test = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.11" }]
+requires-dist = [
+    { name = "fastcore", specifier = ">=2.2.32" },
+    { name = "pydantic", specifier = ">=2.11" },
+]
 
 [package.metadata.requires-dev]
 dev = [
@@ -171,6 +175,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c9/02/bd72be9134d25ed783ecbbc38a539ffaefbf90c78418c7fb7229600dbac7/distlib-0.4.3.tar.gz", hash = "sha256:f152097224a0ae24be5a0f6bae1b9359af82133bce63f98a95f86cae1aede9ed", size = 615141, upload-time = "2026-06-12T08:04:52.847Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/02/08/9c41fb51ab5b43eb21674aff13df270e8ba6c4b29c8624e328dc7a9482af/distlib-0.4.3-py2.py3-none-any.whl", hash = "sha256:4b0ce306c966eb73bc3a7b6abad017c556dadd92c44701562cd528ac7fde4d5b", size = 470628, upload-time = "2026-06-12T08:04:50.506Z" },
+]
+
+[[package]]
+name = "fastcore"
+version = "2.2.32"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/88/c0/666a6c30d7b94089542576bd8b1751b1e8fc6e203e45702790fe95c13115/fastcore-2.2.32.tar.gz", hash = "sha256:ba1ac1d859d28e8a39861d4960643f73a550aa21dc828821de0865d6206b0111", size = 146237, upload-time = "2026-09-30T20:35:25.773Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/21/54/1e59b78b7dfaa16ca61d0a21933dae110da055dcb74c5ed304f792335471/fastcore-2.2.32-py3-none-any.whl", hash = "sha256:e37d56216a92b3b57bac7fee605d1d5c13189c0de2dbd30b5c127db915390f77", size = 152880, upload-time = "2026-09-30T20:35:24.099Z" },
 ]
 
 [[package]]

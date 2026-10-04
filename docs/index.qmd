@@ -1,0 +1,21 @@
+---
+title: babykev
+---
+
+babykev is a small decision model. You send it one document, the *context* (the `state` field of a
+request), and a set of typed questions about it. It returns a probability for every possible answer to
+every question, in one forward pass. It generates no text.
+
+## The contract
+
+A request is a `SystemOneRequest`: a context and one or more questions, each a `Noul`, a `Choice` or a
+`Score`. `to_record` turns the request into the text and the options the model sees, and `to_answers`
+turns the model's probabilities back into answers.
+
+## The reference
+
+The pages under Reference are generated from the source, by `babykev docs module NAME`. Types come from
+the annotations, the description of each parameter from the comment beside it, and the summary from the
+docstring. A name in backticks, anywhere on this site, links to its entry: `render`, `choice_confidence`,
+`score_confidence`. The same text, as plain Markdown, is what `babykev docs list` and `babykev docs
+module api` print at the terminal, for people and for agents.

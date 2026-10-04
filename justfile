@@ -23,10 +23,15 @@ help *verb:
         uv run {{ program }} "$1" help
     fi
 
-# Install Python and every dependency into .venv, exactly as the lockfile says, and the git hook
+# Install Python and every dependency into .venv, exactly as the lockfile says, and the git hook. Says if Quarto is missing
 [group('setup')]
 setup *args:
-    {{ if args == "help" { "just help setup" } else { "uv sync --locked && uv run pre-commit install" } }}
+    #!/usr/bin/env sh
+    set -e
+    if [ "$*" = help ]; then just help setup; exit 0; fi
+    uv sync --locked
+    uv run pre-commit install
+    command -v quarto > /dev/null || echo "Quarto is not on this machine; just docs needs it: https://quarto.org/docs/get-started/"
 
 # Format the code, one way, no arguments. Extra arguments go to ruff: just fmt --check, just fmt --diff
 [group('quality')]
@@ -69,3 +74,12 @@ check *args:
     just lint
     just test -q --cov-fail-under=90
     just lint-config
+
+# Build the docs site into docs/_site. Words go to the program: just docs list, just docs module api, just docs check
+[group('docs')]
+[no-exit-message]
+docs *args:
+    #!/usr/bin/env sh
+    if [ "$*" = help ]; then just help docs; exit 0; fi
+    if [ "$#" -eq 0 ]; then exec uv run quarto render docs; fi
+    exec uv run {{ program }} docs "$@"

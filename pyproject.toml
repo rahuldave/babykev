@@ -8,6 +8,7 @@ license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "Rahul Dave" }]
 requires-python = ">=3.13"
 dependencies = [
+    "fastcore>=2.2.32",
     "pydantic>=2.11",
 ]
 
@@ -38,7 +39,10 @@ addopts = "--cov=babykev --cov-report=term-missing"
 
 [tool.ruff]
 # The one setting the formatter and the linter share. Ruff's own default is 88; this project reads better
-# at 100, and docs-check (later) needs a signature with its docments to fit on a line.
+# at 100. A docment (the comment beside a parameter, read by `babykev docs`) must fit on its line: the
+# formatter wraps a longer line, the comment lands away from its parameter, and `docs check` reports it
+# as missing. Nothing else in the formatter or the linter touches a docment: a line with a comment is
+# never joined with another, and no rule here looks inside a comment.
 line-length = 100
 
 [tool.ruff.format]

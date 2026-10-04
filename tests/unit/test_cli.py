@@ -1,4 +1,4 @@
-"""Unit tests for the `babykev` command: `help` prints the help, any other word is refused."""
+"""Unit tests for the `babykev` command: `help`, `docs`, and the refusal of any other word."""
 
 import pytest
 
@@ -30,3 +30,13 @@ def test_an_unknown_command_is_refused_with_exit_code_2(
     err = capsys.readouterr().err
     assert "no command named 'train'" in err
     assert "babykev help" in err
+
+
+def test_docs_is_passed_to_the_docs_command(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`babykev docs list` runs the docs command and exits with its code."""
+    with pytest.raises(SystemExit) as exit_info:
+        run(monkeypatch, "docs", "list")
+    assert exit_info.value.code == 0
+    assert "babykev.api" in capsys.readouterr().out

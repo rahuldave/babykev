@@ -48,13 +48,21 @@ Three tools on the machine. This project installs everything else itself.
 |---|---|
 | [uv](https://docs.astral.sh/uv/) | Python itself, the dependencies, and running the program |
 | [just](https://just.systems/) | The project's tasks. `just` lists them |
-| [Quarto](https://quarto.org/) | The docs site |
+| [Quarto](https://quarto.org/) | The docs site: `just docs`. `just setup` says if it is missing |
 
 Then `just setup`, and `just test`. `just fmt` formats the code and `just lint` checks it against the
 rules in `pyproject.toml`. `just check` runs everything a commit must pass, and `just setup` installs it
 as a git hook, so a commit that fails a check is refused. `just` lists the tasks, `just help VERB` explains one, and `uv run
 babykev help` is the program's own help. Extra arguments go to the tool behind a recipe: `just test -k
 render` runs only the tests whose name contains `render`.
+
+The documentation comes from the code. `just docs` builds the site into `docs/_site/`; open
+`docs/_site/index.html`. The same text is there at the terminal as plain Markdown, for people and for
+agents: `just docs list` names every module, class and function with its summary, `just docs module api`
+prints one module, and `just docs check` counts what is typed and documented and lists every gap. The
+convention: every function is typed, has a docstring, and carries a docment, a comment beside each
+parameter and the return, which the formatter and the linter leave alone as long as the line fits in 100
+characters. `src/babykev/docs.py` is the example to read.
 
 ## What is here
 
@@ -63,8 +71,10 @@ render` runs only the tests whose name contains `render`.
 | `pyproject.toml`, `uv.lock` | The project: its name, its Python, its dependencies, the settings of its tools (the formatter's, and every lint rule with its reason), and the exact versions installed |
 | `src/babykev/api.py` | The contract: the request and its three question types as Pydantic models, how they become the text and options the model sees, and how probabilities become answers |
 | `src/babykev/cli.py` | The `babykev` command |
+| `src/babykev/docs.py` | What the code says about itself, as plain Markdown: `babykev docs list`, `docs module NAME`, `docs check` |
+| `docs/` | The docs site: `_quarto.yml`, the front page `index.qmd`, `apidocs.py` (writes the reference pages from `babykev docs` before every render) and `linkify.lua` (a name in backticks becomes a link). The built site in `_site/` is not committed |
 | `data/cheese/sample.jsonl` | Five lines of data. Each is a request about a cheese with a `label` on every question: the right answer |
-| `tests/unit/` | Unit tests of the contract and of the command. One test checks every line of the sample data against the contract |
+| `tests/unit/` | Unit tests of the contract, of the command and of the documentation. One test checks every line of the sample data against the contract |
 | `justfile` | Every task of the project, one recipe each. `just help` explains them |
 | `LICENSE`, `NOTICE` | The licence, and the credit to kev |
 | `.python-version` | The Python version the project uses |

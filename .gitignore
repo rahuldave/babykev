@@ -1,0 +1,57 @@
+# Nothing a run produces is tracked. This list is complete from the first commit, so a run's output
+# never shows up as a stray file, whichever step of the history is checked out.
+
+# Experiment tracking: the MLflow store and its artifacts
+mlflow.db
+mlflow.db-*
+mlartifacts/
+mlruns/
+
+# The general training data and the later batches, when they are built here: made from datasets
+# with their own licences
+/data/general/
+/data/later/
+
+# Checkpoints, predictions and reports
+/runs/
+/checkpoints/
+/predictions/
+/reports/
+*.safetensors
+*.ckpt
+*.pt
+
+# Settings for one machine. .env.example is the committed list of them
+.env
+.env.*
+!.env.example
+
+# The built docs site and its generated reference pages
+/docs/_site/
+/docs/.quarto/
+/docs/api/
+/docs/_symbols.json
+/.quarto/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+/build/
+/dist/
+
+# Tool caches
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# Logs, operating systems, editors
+*.log
+.DS_Store
+.idea/
+.vscode/

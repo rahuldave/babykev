@@ -50,7 +50,8 @@ Three tools on the machine. This project installs everything else itself.
 | [just](https://just.systems/) | The project's tasks. `just` lists them |
 | [Quarto](https://quarto.org/) | The docs site |
 
-Then `just setup`, and `just test`. `just` lists the tasks, `just help VERB` explains one, and `uv run
+Then `just setup`, and `just test`. `just fmt` formats the code and `just lint` checks it against the
+rules in `pyproject.toml`. `just` lists the tasks, `just help VERB` explains one, and `uv run
 babykev help` is the program's own help. Extra arguments go to the tool behind a recipe: `just test -k
 render` runs only the tests whose name contains `render`.
 
@@ -58,7 +59,7 @@ render` runs only the tests whose name contains `render`.
 
 | Path | What it is |
 |---|---|
-| `pyproject.toml`, `uv.lock` | The project: its name, its Python, its dependencies, the settings of its tools, and the exact versions installed |
+| `pyproject.toml`, `uv.lock` | The project: its name, its Python, its dependencies, the settings of its tools (the formatter's, and every lint rule with its reason), and the exact versions installed |
 | `src/babykev/api.py` | The contract: the request and its three question types as Pydantic models, how they become the text and options the model sees, and how probabilities become answers |
 | `src/babykev/cli.py` | The `babykev` command |
 | `data/cheese/sample.jsonl` | Five lines of data. Each is a request about a cheese with a `label` on every question: the right answer |

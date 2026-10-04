@@ -5,6 +5,9 @@ program := "babykev"
 # Each word after a recipe's name reaches its commands whole, as "$1", "$2" and so on; "$@" is all of them
 set positional-arguments
 
+# uv refuses a stale lockfile instead of quietly re-locking it: a lockfile changes only on purpose
+export UV_LOCKED := "1"
+
 [private]
 default:
     @just --list --unsorted
@@ -24,6 +27,18 @@ help *verb:
 [group('setup')]
 setup *args:
     {{ if args == "help" { "just help setup" } else { "uv sync --locked" } }}
+
+# Format the code, one way, no arguments. Extra arguments go to ruff: just fmt --check, just fmt --diff
+[group('quality')]
+[no-exit-message]
+fmt *args:
+    {{ if args == "help" { "just help fmt" } else { 'uv run ruff format "$@"' } }}
+
+# Check the code against the rules in pyproject.toml. Extra arguments go to ruff: just lint --statistics
+[group('quality')]
+[no-exit-message]
+lint *args:
+    {{ if args == "help" { "just help lint" } else { 'uv run ruff check "$@"' } }}
 
 # Run the tests, with coverage of src/babykev. Extra arguments go to pytest: just test -k render
 [group('quality')]

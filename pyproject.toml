@@ -23,9 +23,47 @@ test = [
     "pytest>=9.1",
     "pytest-cov>=7.1.0",
 ]
-dev = [{ include-group = "test" }]
+dev = [{ include-group = "test" }, { include-group = "lint" }]
+lint = [
+    "ruff>=0.16",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # Every run measures how much of src/babykev the tests touch and lists the lines they do not
 addopts = "--cov=babykev --cov-report=term-missing"
+
+[tool.ruff]
+# The one setting the formatter and the linter share. Ruff's own default is 88; this project reads better
+# at 100, and docs-check (later) needs a signature with its docments to fit on a line.
+line-length = 100
+
+[tool.ruff.format]
+# The formatter has no style to argue about. These are ruff's defaults, written out so the choice is visible.
+quote-style = "double"            # "text", not 'text'
+indent-style = "space"            # four spaces, never tabs
+skip-magic-trailing-comma = false # a trailing comma means "keep this one item per line"
+line-ending = "auto"              # the file's own line endings
+docstring-code-format = false     # code examples inside docstrings are left as written
+
+[tool.ruff.lint]
+# What the linter checks. A family of rules per line, and why it is on.
+select = [
+    "E",   # pycodestyle errors: the basics, from indentation to line length
+    "W",   # pycodestyle warnings: stray whitespace and the like
+    "F",   # pyflakes: names that are unused, undefined or redefined
+    "I",   # isort: imports in one order, standard library first
+    "B",   # bugbear: constructs that are likely bugs, such as a mutable default argument
+    "UP",  # pyupgrade: older syntax that this Python has a newer form for
+    "SIM", # simplify: code that can be said in fewer words
+    "S",   # bandit: security, from `assert` in production code to `eval`
+    "N",   # pep8-naming: classes CamelCase, functions and variables lower_case
+    "ANN", # annotations: every parameter and every return value has a type
+    "D1",  # pydocstyle: every module, class and function has a docstring
+]
+# random is used to shuffle and to augment data, never for secrets
+ignore = ["S311"]
+
+[tool.ruff.lint.per-file-ignores]
+# A test is written with assert
+"tests/**" = ["S101"]

@@ -7,7 +7,9 @@ license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "Rahul Dave" }]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.11",
+]
 
 [project.scripts]
 babykev = "babykev.cli:main"
@@ -15,3 +17,15 @@ babykev = "babykev.cli:main"
 [build-system]
 requires = ["uv_build>=0.12.13,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+test = [
+    "pytest>=9.1",
+    "pytest-cov>=7.1.0",
+]
+dev = [{ include-group = "test" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Every run measures how much of src/babykev the tests touch and lists the lines they do not
+addopts = "--cov=babykev --cov-report=term-missing"

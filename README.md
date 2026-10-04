@@ -1,6 +1,6 @@
 # babykev
 
-babykev is a small decision model. You send it one document, the *context*, and a set of typed questions about it. It returns a probability for every possible answer to every question, in one forward pass. It generates no text.
+babykev is a small decision model. You send it one document, the *context* (the `state` field of a request), and a set of typed questions about it. It returns a probability for every possible answer to every question, in one forward pass. It generates no text.
 
 A request looks like this:
 
@@ -50,15 +50,19 @@ Three tools on the machine. This project installs everything else itself.
 | [just](https://just.systems/) | The project's tasks. `just` lists them |
 | [Quarto](https://quarto.org/) | The docs site |
 
-Then `just setup`. `just` lists the tasks, `just help VERB` explains one, and `uv run babykev help` is
-the program's own help.
+Then `just setup`, and `just test`. `just` lists the tasks, `just help VERB` explains one, and `uv run
+babykev help` is the program's own help. Extra arguments go to the tool behind a recipe: `just test -k
+render` runs only the tests whose name contains `render`.
 
 ## What is here
 
 | Path | What it is |
 |---|---|
-| `pyproject.toml`, `uv.lock` | The project: its name, its Python, its dependencies, and the exact versions installed |
-| `src/babykev/` | The code. `cli.py` is the `babykev` command |
+| `pyproject.toml`, `uv.lock` | The project: its name, its Python, its dependencies, the settings of its tools, and the exact versions installed |
+| `src/babykev/api.py` | The contract: the request and its three question types as Pydantic models, how they become the text and options the model sees, and how probabilities become answers |
+| `src/babykev/cli.py` | The `babykev` command |
+| `data/cheese/sample.jsonl` | Five lines of data. Each is a request about a cheese with a `label` on every question: the right answer |
+| `tests/unit/` | Unit tests of the contract and of the command. One test checks every line of the sample data against the contract |
 | `justfile` | Every task of the project, one recipe each. `just help` explains them |
 | `LICENSE`, `NOTICE` | The licence, and the credit to kev |
 | `.python-version` | The Python version the project uses |

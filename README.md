@@ -58,7 +58,9 @@ babykev help` is the program's own help. Extra arguments go to the tool behind a
 render` runs only the tests whose name contains `render`.
 
 The documentation comes from the code. `just docs` builds the site into `docs/_site/`; open
-`docs/_site/index.html`. The same text is there at the terminal as plain Markdown, for people and for
+`docs/_site/index.html`. Under Guide, two pages explain the model: the four ideas, and the mask as a
+grid (a notebook, committed with its outputs; a test re-runs its cells and checks the outputs are still
+true). The same text is there at the terminal as plain Markdown, for people and for
 agents: `just docs list` names every module, class and function with its summary, `just docs module api`
 prints one module, and `just docs check` counts what is typed and documented and lists every gap. The
 convention: every function is typed, has a docstring, and carries a docment, a comment beside each
@@ -75,8 +77,8 @@ what the run shows is that the pieces fit. The first run downloads the base mode
 Hub, about 1 GB, into its cache; later runs read it from there. The platform is a word of the recipe, and
 only `local` exists so far.
 
-`just types` is ty, the type checker: it reads every call against what the called function declares.
-It is not part of `just check` yet.
+`just types` is ty, the type checker: it reads every call against what the called function declares,
+and it is one of the lines of `just check`, so the hook runs it on every commit.
 
 ## What is here
 
@@ -88,7 +90,7 @@ It is not part of `just check` yet.
 | `src/babykev/model.py` | The model: packing a context and its questions into one sequence, the mask that keeps questions apart, the pointer head that scores options, and the class that puts them on a language model |
 | `src/babykev/smoke.py` | The smoke run behind `just smoke` |
 | `src/babykev/docs.py` | What the code says about itself, as plain Markdown: `babykev docs list`, `docs module NAME`, `docs check` |
-| `docs/` | The docs site: `_quarto.yml`, the front page `index.qmd`, `apidocs.py` (writes the reference pages from `babykev docs` before every render) and `linkify.lua` (a name in backticks becomes a link). The built site in `_site/` is not committed |
+| `docs/` | The docs site: `_quarto.yml`, the front page `index.qmd`, the guide pages under `guide/`, `apidocs.py` (writes the reference pages from `babykev docs` before every render) and `linkify.lua` (a name in backticks becomes a link). The built site in `_site/` is not committed |
 | `data/cheese/sample.jsonl` | Five lines of data. Each is a request about a cheese with a `label` on every question: the right answer |
 | `tests/unit/` | Unit tests of the contract, of the command, of the documentation, of the model and of the smoke. One test checks every line of the sample data against the contract |
 | `tests/tiny.py`, `tests/conftest.py` | A tokenizer with one token per character and a two-layer backbone with random weights, built in memory: the model's tests need no download and no GPU |

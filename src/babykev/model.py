@@ -65,7 +65,18 @@ def load_tokenizer(
     name: str,  # A model name on the Hugging Face Hub, or a local folder
 ) -> PreTrainedTokenizerBase:  # Its tokenizer
     """Load the tokenizer that belongs to a base model."""
-    return AutoTokenizer.from_pretrained(name)
+    tok = AutoTokenizer.from_pretrained(name)
+    if not isinstance(tok, PreTrainedTokenizerBase):
+        raise TypeError(f"{name} has no tokenizer this model can use")
+    return tok
+
+
+def delimiter_ids(
+    tok: PreTrainedTokenizerBase,  # The base model's tokenizer
+) -> list[int]:  # The ids of the five delimiters, in the order of `SPECIAL`
+    """Look up the token ids of the delimiters."""
+    ids = tok.convert_tokens_to_ids(SPECIAL)
+    return ids if isinstance(ids, list) else [ids]
 
 
 def user_tokens(
@@ -94,7 +105,7 @@ def encode(
     instruction, each option between its two delimiters, and the decide delimiter. Raises
     `ValueError` when a branch does not fit in `max_branch`.
     """
-    s_id, q_id, o_id, c_id, d_id = tok.convert_tokens_to_ids(SPECIAL)
+    s_id, q_id, o_id, c_id, d_id = delimiter_ids(tok)
     state = [s_id] + user_tokens(tok, rec["state"])[: max_state - 1]
     ids, seg, pos = list(state), [0] * len(state), list(range(len(state)))
     decide_idx, opt_idx = [], []
@@ -137,7 +148,7 @@ def branch_mask(
     s = torch.tensor(seg, device=device)
     n = len(seg)
     causal = torch.tril(torch.ones(n, n, dtype=torch.bool, device=device))
-    same = torch.ones_like(causal) | (s[None, :] == 0)
+    same = (s[None, :] == s[:, None]) | (s[None, :] == 0)
     allow = causal & same
     blocked = torch.finfo(dtype).min
     return torch.zeros(n, n, dtype=dtype, device=device).masked_fill(~allow, blocked)[None, None]

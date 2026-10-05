@@ -8,6 +8,8 @@ website:
   sidebar:
     contents:
       - index.qmd
+      - section: Guide
+        contents: guide/*
       - section: Reference
         contents: api/*
 

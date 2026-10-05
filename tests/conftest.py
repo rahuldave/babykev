@@ -38,3 +38,14 @@ def record() -> dict[str, Any]:  # A record with a state and three questions
             {"instr": "How firm?", "options": ["Soft", "Semi-soft", "Hard"], "label": 1},
         ],
     }
+
+
+# hypothesis runs a test again and again, and by default allows each run 200 ms. The first run
+# that uses torch can take longer than that on a slow or busy machine, for example inside a
+# container, and the test then fails by chance: `DeadlineExceeded`, reported as `FlakyFailure`.
+# The tests that hypothesis feeds check a rule and not a speed, so the deadline is off for the
+# whole run. The import sits here, below the fixtures, so that they keep their places in the file.
+from hypothesis import settings  # noqa: E402
+
+settings.register_profile("babykev", deadline=None)
+settings.load_profile("babykev")

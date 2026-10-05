@@ -69,7 +69,7 @@ types *args:
 test *args:
     {{ if args == "help" { "just help test" } else { 'uv run pytest "$@"' } }}
 
-# Everything a commit must pass: format, lint, the tests over the coverage floor, the docs, the config files
+# Everything a commit must pass: format, lint, types, the tests over the coverage floor, the docs, the config files
 [group('quality')]
 [no-exit-message]
 check *args:
@@ -78,6 +78,7 @@ check *args:
     if [ "$*" = help ]; then just help check; exit 0; fi
     just fmt --check
     just lint
+    just types
     just test -q --cov-fail-under=90
     just docs check
     just lint-config

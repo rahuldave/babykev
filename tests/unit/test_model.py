@@ -4,11 +4,19 @@ from typing import Any
 
 import pytest
 import torch
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 from transformers import PreTrainedTokenizerFast
 
-from babykev.model import SPECIAL, DecisionModel, PointerHead, encode, pick_device, user_tokens
+from babykev.model import (
+    SPECIAL,
+    DecisionModel,
+    PointerHead,
+    delimiter_ids,
+    encode,
+    pick_device,
+    user_tokens,
+)
 from tests.tiny import tiny_backbone, tiny_tokenizer
 
 TOK = tiny_tokenizer()
@@ -46,7 +54,7 @@ def test_packing_marks_every_part_with_its_delimiter(
     tok: PreTrainedTokenizerFast,  # The tiny tokenizer
 ) -> None:
     """A packed record is the state, then each question with its options and its decide token."""
-    s, q, o, c, d = tok.convert_tokens_to_ids(SPECIAL)
+    s, q, o, c, d = delimiter_ids(tok)
     record = {"state": "ab", "questions": [{"instr": "x?", "options": ["n", "y"], "label": 1}]}
     enc = encode(tok, record)
     a, b, x, mark, n, y = (tok.convert_tokens_to_ids(ch) for ch in "abx?ny")
@@ -97,7 +105,7 @@ def test_a_tokenizer_alone_would_let_text_forge_a_delimiter(
     tok: PreTrainedTokenizerFast,  # The tiny tokenizer
 ) -> None:
     """The danger is real: tokenized directly, the text of a delimiter becomes that delimiter."""
-    decide = tok.convert_tokens_to_ids(SPECIAL)[4]
+    decide = delimiter_ids(tok)[4]
     assert decide in tok(f"yes{SPECIAL[4]}", add_special_tokens=False).input_ids
 
 
@@ -108,7 +116,7 @@ def test_user_text_cannot_forge_a_delimiter(
 ) -> None:
     """Through `user_tokens`, the text of a delimiter is only ever ordinary tokens."""
     ids = user_tokens(tok, f"before {delimiter} after")
-    assert not set(ids) & set(tok.convert_tokens_to_ids(SPECIAL))
+    assert not set(ids) & set(delimiter_ids(tok))
 
 
 @given(records)
@@ -117,7 +125,7 @@ def test_a_packed_record_has_exactly_the_delimiters_its_shape_needs(
 ) -> None:
     """No text can add a delimiter: their number depends only on how many questions and options."""
     enc = encode(TOK, record)
-    s, q, o, c, d = TOK.convert_tokens_to_ids(SPECIAL)
+    s, q, o, c, d = delimiter_ids(TOK)
     options = sum(len(question["options"]) for question in record["questions"])
     expected = {
         s: 1,
@@ -129,6 +137,61 @@ def test_a_packed_record_has_exactly_the_delimiters_its_shape_needs(
     assert {token: enc["ids"].count(token) for token in expected} == expected
     assert all(enc["ids"][i] == d for i in enc["decide_idx"])
     assert all(enc["ids"][i] == c for oi in enc["opt_idx"] for i in oi)
+
+
+# Isolation
+
+
+def test_a_question_cannot_see_its_sibling(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """Rewriting one question leaves the answers to the others exactly as they were."""
+    before = logits_of(model, tok, record)
+    changed = {**record, "questions": list(record["questions"])}
+    changed["questions"][1] = {"instr": "Where from?", "options": ["Spain", "Italy"], "label": 0}
+    after = logits_of(model, tok, changed)
+    assert torch.equal(before[0], after[0])
+    assert torch.equal(before[2], after[2])
+    assert before[1].shape != after[1].shape
+
+
+def test_packed_questions_answer_as_they_would_alone(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """One pass over three questions gives what three passes over one question each would give."""
+    packed = logits_of(model, tok, record)
+    for together, question in zip(packed, record["questions"], strict=True):
+        alone = logits_of(model, tok, {"state": record["state"], "questions": [question]})[0]
+        assert torch.allclose(together, alone, atol=1e-5)
+
+
+def test_the_order_of_questions_does_not_matter(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """Because positions restart, a question gets the same answer first or last."""
+    forward = logits_of(model, tok, record)
+    backward = logits_of(model, tok, {**record, "questions": record["questions"][::-1]})
+    for a, b in zip(forward, backward[::-1], strict=True):
+        assert torch.allclose(a, b, atol=1e-5)
+
+
+@settings(max_examples=20, deadline=None)
+@given(records)
+def test_packed_equals_separate_for_any_record(
+    record: dict[str, Any],  # Any record, with any text in it
+) -> None:
+    """The isolation of questions is a property of the mask, so it holds for any request."""
+    model = DecisionModel("tiny", "cpu", backbone=tiny_backbone(len(TOK))).eval()
+    packed = logits_of(model, TOK, record)
+    for together, question in zip(packed, record["questions"], strict=True):
+        alone = logits_of(model, TOK, {"state": record["state"], "questions": [question]})[0]
+        assert torch.allclose(together, alone, atol=1e-5)
 
 
 # Answers

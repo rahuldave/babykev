@@ -89,6 +89,9 @@ ignore = ["S311"]
 [tool.ruff.lint.per-file-ignores]
 # A test is written with assert. S106 mistakes the tokenizer argument `unk_token` for a password
 "tests/**" = ["S101", "S106"]
+# A notebook imports the renderer under the name nbdev users know it by, and its helper functions
+# are part of the story it tells, not of the code
+"docs/guide/*.ipynb" = ["N813", "ANN", "D1"]
 
 [tool.uv.sources]
 torch = { index = "pytorch-cpu" } # the CPU build, from the index above

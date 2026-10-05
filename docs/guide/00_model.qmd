@@ -1,0 +1,55 @@
+---
+title: "The model"
+---
+
+babykev is a language model that has been taught to point instead of to speak. Four ideas make that
+work, and each is one piece of `model.py`. The reference pages hold the signatures; this page holds the
+reasons.
+
+## 1. Packing
+
+A request is one context and several questions. `encode` writes all of it into a single sequence of
+tokens, in this order: a delimiter and the context, then for each question a delimiter, the instruction,
+each option between an opening and a closing delimiter, and a decide delimiter where the question ends.
+The five delimiters are special tokens the base model already has and rarely uses, listed in `SPECIAL`,
+so no embedding has to be added or trained: the adapter learns their new meaning.
+
+Text that comes from a caller goes through `user_tokens` first, which rewrites anything that looks like
+a special token before tokenizing it. Without that, a context containing the text of the closing
+delimiter could close an option early. The tests put the delimiters' text into every field and count
+the delimiters that come out.
+
+`encode` returns an `Encoded`: the ids, and three things the model needs to read them correctly: the
+segment of each token (0 for the context, *k* for question *k*), the position of each token, and where
+each question's decide token and option tokens are.
+
+## 2. The mask
+
+The questions share one reading of the context, and nothing else. `branch_mask` builds the attention
+mask that makes this true: token *i* may attend to token *j* only when *j* is not after *i*, and *j* is
+in the context or in the same question as *i*. The mask is added to the attention scores, so a blocked
+pair gets the most negative number the number type can hold.
+
+Because of this mask, three questions packed into one request get exactly the answers they would get
+in three separate requests, and the tests check that to the last decimal. The next page shows the mask
+as a grid.
+
+## 3. Positions restart
+
+Every question's positions begin right after the context. To the model, a question looks the same
+wherever it comes in the request, and the tests check that reversing the order of the questions
+changes nothing.
+
+## 4. Pointing
+
+`PointerHead` is two small projections. At each question's decide token it takes the hidden state and
+projects it; at each option's closing token it takes the hidden state and projects it; the scaled dot
+product of the two is the option's score. One pass gives every question its scores at once. The base
+model's vocabulary head is dropped: `DecisionModel` keeps only the transformer, wraps it in a LoRA
+adapter when asked, and adds the head. The model has no way to generate text.
+
+## What trains
+
+With an adapter, the backbone is frozen. Gradients reach the adapter's matrices and the pointer head
+and nothing else; `trainable_parameters` lists exactly those. The smoke run reports how many
+parameters that is: about 9 million of 503 million.

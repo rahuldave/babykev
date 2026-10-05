@@ -1,0 +1,26 @@
+# What `docker build` never copies into an image: the git history, this machine's environment and
+# settings, and everything a run or a tool writes. The image makes its own environment in /opt/venv.
+.git
+.venv
+.env
+.env.*
+**/__pycache__
+.ruff_cache
+.pytest_cache
+.hypothesis
+.coverage
+.coverage.*
+htmlcov
+mlflow.db
+mlflow.db-*
+mlartifacts
+mlruns
+runs
+checkpoints
+predictions
+reports
+docs/_site
+docs/.quarto
+docs/api
+docs/_symbols.json
+.DS_Store

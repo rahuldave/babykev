@@ -31,6 +31,7 @@ test = [
 ]
 dev = [{ include-group = "test" }, { include-group = "lint" }]
 lint = [
+    "hadolint-bin>=2.15.1",
     "pre-commit>=4.6",
     "ruff>=0.16",
     "ty>=0.0.84",
@@ -49,8 +50,11 @@ explicit = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."] # so that a test can import its helpers as tests.tiny
-# Every run measures how much of src/babykev the tests touch and lists the lines they do not
-addopts = "--cov=babykev --cov-report=term-missing"
+# Every run measures how much of src/babykev the tests touch and lists the lines they do not. A test
+# marked system needs something besides our code (the Hub, the real weights, a device) and runs
+# only when asked for: just test -m system
+addopts = "--cov=babykev --cov-report=term-missing -m 'not system'"
+markers = ["system: needs the network, the real model or a device; run with -m system"]
 
 [tool.ruff]
 # The one setting the formatter and the linter share. Ruff's own default is 88; this project reads better

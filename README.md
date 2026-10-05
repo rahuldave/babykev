@@ -42,7 +42,9 @@ This is an educational repo. The repo `babykev` keeps the original model but reb
 
 ## What you need
 
-Three tools on the machine. This project installs everything else itself.
+Three tools on the machine. This project installs everything else itself. On a Mac or on Linux,
+install them directly. On Windows, work inside WSL2, which is Linux, or use the dev image (below);
+the recipes are not written for Windows itself.
 
 | Tool | What it is for |
 |---|---|
@@ -58,7 +60,10 @@ babykev help` is the program's own help. Extra arguments go to the tool behind a
 render` runs only the tests whose name contains `render`.
 
 The documentation comes from the code. `just docs` builds the site into `docs/_site/`; open
-`docs/_site/index.html`. Under Guide, two pages explain the model: the four ideas, and the mask as a
+`docs/_site/index.html`. `just docs publish` builds it and pushes it to the `gh-pages` branch of the
+GitHub repository that `origin` names, for GitHub Pages to serve (once, in the repository's settings,
+Pages must be set to deploy from that branch); with no remote, or one that is not on GitHub, it says so
+and does nothing. Under Guide, two pages explain the model: the four ideas, and the mask as a
 grid (a notebook, committed with its outputs; a test re-runs its cells and checks the outputs are still
 true). The same text is there at the terminal as plain Markdown, for people and for
 agents: `just docs list` names every module, class and function with its summary, `just docs module api`
@@ -77,8 +82,40 @@ what the run shows is that the pieces fit. The first run downloads the base mode
 Hub, about 1 GB, into its cache; later runs read it from there. The platform is a word of the recipe, and
 only `local` exists so far.
 
+`just test` runs every test that needs nothing but our code. One more test, in
+`tests/system/`, loads the real model the way the smoke does; it needs the Hub, the weights and a
+device, so it runs only when asked for: `just test -m system`.
+
 `just types` is ty, the type checker: it reads every call against what the called function declares,
 and it is one of the lines of `just check`, so the hook runs it on every commit.
+
+## In Docker
+
+The `Dockerfile` builds two images from the lockfile, for any machine that has Docker (Docker Desktop
+on a Mac or on Windows, OrbStack on a Mac, Docker Engine on Linux or on a cloud VM):
+
+| Image | Holds | Starts | For |
+|---|---|---|---|
+| dev | Python, every dependency with the dev tools, uv, just, Quarto, git | a shell | working on the project on any system, and checking it the way a CI runner would |
+| run | Python and the dependencies the program needs, nothing else | `babykev` | a platform that runs the program |
+
+```
+just image build dev        # docker build --target dev, named babykev-dev:COMMIT
+just image shell            # a shell in a new container, with this folder mounted at /work: just check
+just image start            # or keep one running in the background; then just image shell goes into it,
+just image stop             #   and what you installed or ran there is still there, until stop removes it
+just image build run
+just image run smoke        # the smoke in the run image, on the CPU
+```
+
+Each image is built for the machine's own architecture; `just image build run --platform linux/amd64`
+builds the one most platforms run. The environment inside lives in `/opt/venv`, so a mounted folder's
+own `.venv` is never used. Both images read the Hugging Face cache of the machine, mounted at `/hf`, so
+the base model is downloaded once. Extra arguments go to docker: `just image shell --network none`
+starts the shell with no network at all, where `just check` still passes and the real model can load
+only from the cache. The dev image declares port 8765, the step browser's: `just image shell` and `just image start`
+publish it on the first free port here from 8765 up, and say which. The recipe runs on the machine,
+never inside an image.
 
 ## What is here
 
@@ -92,6 +129,8 @@ and it is one of the lines of `just check`, so the hook runs it on every commit.
 | `src/babykev/docs.py` | What the code says about itself, as plain Markdown: `babykev docs list`, `docs module NAME`, `docs check` |
 | `docs/` | The docs site: `_quarto.yml`, the front page `index.qmd`, the guide pages under `guide/`, `apidocs.py` (writes the reference pages from `babykev docs` before every render) and `linkify.lua` (a name in backticks becomes a link). The built site in `_site/` is not committed |
 | `data/cheese/sample.jsonl` | Five lines of data. Each is a request about a cheese with a `label` on every question: the right answer |
+| `Dockerfile`, `.dockerignore` | The two images, dev and run, and what a build never copies into them |
+| `tests/system/` | The test that is not hermetic: the real model, from the Hub, on this machine's device |
 | `tests/unit/` | Unit tests of the contract, of the command, of the documentation, of the model and of the smoke. One test checks every line of the sample data against the contract |
 | `tests/tiny.py`, `tests/conftest.py` | A tokenizer with one token per character and a two-layer backbone with random weights, built in memory: the model's tests need no download and no GPU |
 | `justfile` | Every task of the project, one recipe each. `just help` explains them |

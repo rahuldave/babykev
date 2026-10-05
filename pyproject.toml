@@ -9,7 +9,11 @@ authors = [{ name = "Rahul Dave" }]
 requires-python = ">=3.13"
 dependencies = [
     "fastcore>=2.2.32",
+    "peft>=0.21",
     "pydantic>=2.11",
+    "safetensors>=0.5",
+    "torch>=2.14,<2.15",
+    "transformers>=5.17,<6",
 ]
 
 [project.scripts]
@@ -21,6 +25,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 test = [
+    "hypothesis>=6.168",
     "pytest>=9.1",
     "pytest-cov>=7.1.0",
 ]
@@ -28,12 +33,22 @@ dev = [{ include-group = "test" }, { include-group = "lint" }]
 lint = [
     "pre-commit>=4.6",
     "ruff>=0.16",
+    "ty>=0.0.84",
     "validate-pyproject>=0.26",
     "yamllint>=1.38",
 ]
 
+# torch comes in several builds. This project installs the CPU build everywhere, from PyTorch's own
+# index: small, and enough for the tests and for inference on a laptop. `explicit` keeps every other
+# package on PyPI. A GPU build arrives with the first platform that has a GPU.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."] # so that a test can import its helpers as tests.tiny
 # Every run measures how much of src/babykev the tests touch and lists the lines they do not
 addopts = "--cov=babykev --cov-report=term-missing"
 
@@ -72,5 +87,8 @@ select = [
 ignore = ["S311"]
 
 [tool.ruff.lint.per-file-ignores]
-# A test is written with assert
-"tests/**" = ["S101"]
+# A test is written with assert. S106 mistakes the tokenizer argument `unk_token` for a password
+"tests/**" = ["S101", "S106"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" } # the CPU build, from the index above

@@ -11,11 +11,32 @@ from babykev import docs
 THING = '''
 """A thing, with one function that is documented and one that is not."""
 
-from typing import Literal
+import functools
+from collections.abc import Callable
+from typing import Literal, TypedDict
 
 from pydantic import BaseModel, Field
 
 Pair = tuple[int, int]
+
+
+def logged(
+    f: Callable,  # A function to wrap
+) -> Callable:  # The same function, wrapped
+    """Decorate a function, keeping it under `__wrapped__`."""
+
+    @functools.wraps(f)
+    def inner(*a, **k):
+        return f(*a, **k)
+
+    return inner
+
+
+class Point(TypedDict):
+    """A point, as a TypedDict: its keys are its signature."""
+
+    x: int  # Across
+    y: int
 
 
 def greet(
@@ -51,6 +72,14 @@ class Thing:
         """Measure the thing."""
         return 1
 
+    @logged
+    def grow(
+        self,
+        by: int,  # How much
+    ) -> int:  # The new size
+        """Grow the thing, through a decorator."""
+        return 1 + by
+
     def _hidden(self):
         return 0
 '''
@@ -82,12 +111,15 @@ def test_inventory_lists_the_public_symbols_in_source_order(
     found = [(s.kind, s.name, s.summary) for s in docs.inventory(pkg)]
     assert found == [
         ("module", "", "A thing, with one function that is documented and one that is not."),
+        ("function", "logged", "Decorate a function, keeping it under `__wrapped__`."),
+        ("class", "Point", "A point, as a TypedDict: its keys are its signature."),
         ("function", "greet", "Say hello."),
         ("function", "bare", ""),
         ("function", "span", "Print the pair."),
         ("class", "Box", "A box, as a pydantic model: its fields are its signature."),
         ("class", "Thing", "A thing with a method."),
         ("method", "Thing.size", "Measure the thing."),
+        ("method", "Thing.grow", "Grow the thing, through a decorator."),
     ]
 
 
@@ -158,6 +190,27 @@ def test_markdown_shows_a_pydantic_model_as_a_table_of_fields(
     assert "| `label` | str \\| None | `None` |  |" in text
 
 
+def test_markdown_shows_a_typeddict_as_a_table_of_keys(
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+) -> None:
+    """A TypedDict has no signature to show; its keys are the table, with their comments."""
+    text = docs.markdown("thing", example(tmp_path, monkeypatch))
+    assert "## class Point\n\nA point, as a TypedDict: its keys are its signature.\n\n| Key" in text
+    assert "| `x` | int | Across |" in text
+    assert "| `y` | int |  |" in text
+
+
+def test_a_decorated_method_is_seen_through_its_decorator(
+    tmp_path: Path,  # A folder of this test's own, where the example package is written
+    monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
+) -> None:
+    """`Thing.grow` is wrapped by `logged`; its own signature and docments are what is shown."""
+    text = docs.markdown("thing", example(tmp_path, monkeypatch))
+    assert "### Thing.grow\n\n```python\nThing.grow(by: int) -> int\n```" in text
+    assert "| `by` | int | required | How much |" in text
+
+
 def test_markdown_has_no_links_and_no_ids(
     tmp_path: Path,  # A folder of this test's own, where the example package is written
     monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
@@ -196,6 +249,8 @@ def test_gaps_names_what_each_symbol_is_missing(
     assert found["Thing"] == []
     assert found["Thing.size"] == []
     assert found["Box"] == ["pkg.thing:Box.label: no description"]
+    assert found["Point"] == ["pkg.thing:Point.y: no docment"]
+    assert found["Thing.grow"] == []
     assert found["bare"] == [
         "pkg.thing:bare: no docstring",
         "pkg.thing:bare(x): no type",
@@ -233,26 +288,28 @@ def test_check_prints_a_count_per_module_then_every_gap_and_fails(
 ) -> None:
     """`check` prints one line per module, the gaps, the total, and exits 1 when there is a gap."""
     pkg = example(tmp_path, monkeypatch)
-    assert docs.main(["check"], pkg, tmp_path / "no-tests") == 1
+    assert docs.main(["check"], pkg, tmp_path / "nowhere") == 1
     out = capsys.readouterr().out
-    assert "pkg.thing                          4 of   7" in out
+    assert "pkg.thing                          6 of  10" in out
     assert "pkg.thing:bare(x): no docment" in out
-    assert out.endswith("4 of 7 functions, methods and classes are typed and documented\n")
+    assert out.endswith("6 of 10 functions, methods and classes are typed and documented\n")
 
 
-def test_check_holds_the_tests_to_the_convention_too(
+def test_check_holds_the_tests_and_the_root_and_docs_files_too(
     tmp_path: Path,  # A folder of this test's own, where the example package is written
     monkeypatch: pytest.MonkeyPatch,  # Makes the example importable for this test only
     capsys: pytest.CaptureFixture[str],  # Captures what the command prints
 ) -> None:
-    """A folder of tests is checked like the package, each file under its path."""
+    """The tests, a script at the root and a script under docs/ are checked like the package."""
     pkg = example(tmp_path, monkeypatch)
     (tmp_path / "tests").mkdir()
-    (tmp_path / "tests" / "test_x.py").write_text(
-        '"""Tests."""\n\n\ndef test_x() -> None:\n    """One."""\n'
-    )
-    assert docs.main(["check"], pkg, tmp_path / "tests") == 1
-    assert "/tests/test_x.py" in capsys.readouterr().out
+    (tmp_path / "docs").mkdir()
+    one = '"""One file."""\n\n\ndef f() -> None:\n    """One."""\n'
+    for name in ("tests/test_x.py", "tool.py", "docs/build.py"):
+        (tmp_path / name).write_text(one)
+    assert docs.main(["check"], pkg, tmp_path) == 1
+    out = capsys.readouterr().out
+    assert all(f"/{name}" in out for name in ("tool.py", "docs/build.py", "tests/test_x.py"))
 
 
 def test_list_prints_one_line_per_symbol(
@@ -264,7 +321,7 @@ def test_list_prints_one_line_per_symbol(
     assert docs.main(["list"], example(tmp_path, monkeypatch)) == 0
     lines = capsys.readouterr().out.splitlines()
     assert lines[0].startswith("module    pkg.thing             A thing, with one function")
-    assert lines[-1] == "method    pkg.thing.Thing.size  Measure the thing."
+    assert lines[-1] == "method    pkg.thing.Thing.grow  Grow the thing, through a decorator."
 
 
 def test_module_prints_the_markdown_and_an_unknown_name_is_refused(

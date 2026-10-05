@@ -12,6 +12,7 @@ usage: babykev COMMAND [FLAGS]
 
 commands:
   docs    what the code says about itself, as Markdown: docs list, docs module NAME, docs check
+  smoke   load the base model on this machine and answer the five sample requests, untrained
 """
 
 
@@ -23,5 +24,9 @@ def main() -> None:
         return
     if words[0] == "docs":
         raise SystemExit(docs.main(words[1:]))
+    if words[0] == "smoke":
+        from babykev import smoke  # imports torch, so only when asked for
+
+        raise SystemExit(smoke.main(words[1:]))
     print(f"babykev: no command named {words[0]!r}. Run `babykev help`.", file=sys.stderr)
     raise SystemExit(2)

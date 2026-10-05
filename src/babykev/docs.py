@@ -7,7 +7,8 @@
 Types come from the annotations, the description of a parameter from its docment (the comment beside
 it, read by fastcore) and the summary from the docstring. Nothing is written twice. The output is
 plain Markdown with no links, ids or URLs, so that a person, an agent or the docs site can read it.
-`list` and `module` show the package; `check` holds the package and the tests to the convention.
+`list` and `module` show the package; `check` holds the package, the tests, and the Python files at
+the root and under `docs/` to the convention.
 
 How to write a docment, so that the formatter and the linter leave it alone: one parameter per
 line, a trailing comma after the last, the comment two spaces after the code; the return's comment
@@ -20,6 +21,7 @@ lint rule looks inside one.
 import importlib
 import importlib.util
 import inspect
+import re
 import sys
 import types
 import typing
@@ -32,8 +34,9 @@ from fastcore.docments import docments
 from pydantic import BaseModel
 
 PACKAGE = "babykev"
-TESTS = Path("tests")
+ROOT = Path()
 EMPTY = inspect.Parameter.empty
+KEY_COMMENT = re.compile(r"^\s+(\w+)\s*:[^#\n]+#\s*(.+)$", re.MULTILINE)
 USAGE = """\
 usage: babykev docs list            every module, class, method and function, one line each
        babykev docs module NAME     one module as Markdown: api, cli or docs
@@ -63,12 +66,20 @@ def package_modules(
     return [importlib.import_module(f"{package}.{n}") for n in names]
 
 
+def python_files(
+    root: Path,  # The repository's root
+) -> list[Path]:  # Every `.py` file at the root, under `docs/` and under `tests/`, in that order
+    """Find the Python files that are not the package and are held to the convention too."""
+    found = sorted(root.glob("*.py")) + sorted((root / "docs").glob("*.py"))
+    return found + sorted((root / "tests").rglob("*.py"))
+
+
 def file_modules(
-    folder: Path,  # A folder of Python files, such as `tests/`
-) -> list[ModuleType]:  # One module per file found, named by its path, in path order
-    """Import every Python file under a folder as a module of its own, named by its path."""
+    files: list[Path],  # Python files that are not part of a package
+) -> list[ModuleType]:  # One module per file, named by its path, in the order given
+    """Import Python files as modules of their own, named by their paths."""
     mods = []
-    for file in sorted(folder.rglob("*.py")):
+    for file in files:
         name = file.as_posix()
         spec = importlib.util.spec_from_file_location(name, file)
         if spec is None or spec.loader is None:
@@ -112,6 +123,14 @@ def line_of(
     return inspect.getsourcelines(sym)[1]
 
 
+def unwrapped(
+    obj: object,  # Anything a module or a class holds under a name
+) -> object:  # The function inside it when it is a decorator's wrapper; otherwise the object itself
+    """See through a decorator that kept the function, as `functools.wraps` and a fixture do."""
+    inner = getattr(obj, "__func__", obj)
+    return inspect.unwrap(inner) if callable(inner) and hasattr(inner, "__wrapped__") else inner
+
+
 def own(
     mod: ModuleType,  # An imported module
     private: bool = False,  # Include names that start with an underscore
@@ -119,7 +138,7 @@ def own(
     """List the functions and classes a module defines itself, in source order; not its imports."""
     found = [
         o
-        for n, o in vars(mod).items()
+        for n, o in ((n, unwrapped(o)) for n, o in vars(mod).items())
         if (private or not n.startswith("_"))
         and (inspect.isfunction(o) or inspect.isclass(o))
         and o.__module__ == mod.__name__
@@ -139,7 +158,7 @@ def methods(
     private: bool = False,  # Include names that start with one underscore
 ) -> list[FunctionType]:  # The methods the class defines, in source order
     """List the methods a class defines itself, in source order, not what it inherits."""
-    found = [(n, getattr(o, "__func__", o)) for n, o in vars(klass).items() if not is_dunder(n)]
+    found = [(n, unwrapped(o)) for n, o in vars(klass).items() if not is_dunder(n)]
     own_ = [o for n, o in found if (private or not n.startswith("_")) and inspect.isfunction(o)]
     return sorted(own_, key=line_of)
 
@@ -281,6 +300,24 @@ def fields_table(
     return table(rows, ["Field", "Type", "Default", "Description"])
 
 
+def key_comments(
+    klass: type,  # A TypedDict class
+) -> dict[str, str]:  # For each key that has one, the comment beside it
+    """Read the docments of a TypedDict: the comment beside each key in the class body."""
+    return dict(KEY_COMMENT.findall(inspect.getsource(klass)))
+
+
+def keys_table(
+    klass: type,  # A TypedDict class
+    mod: ModuleType,  # The module it was written in
+) -> str:  # A Markdown table of its keys: type, description
+    """Describe a TypedDict by its keys, because calling it says nothing."""
+    said = key_comments(klass)
+    keys = klass.__annotations__.items()
+    rows = [[f"`{n}`", type_text(a, mod), said.get(n, "")] for n, a in keys]
+    return table(rows, ["Key", "Type", "Description"])
+
+
 def has_init(
     klass: type,  # A class
 ) -> bool:  # Whether it has a constructor of its own, written by hand or by `dataclass`
@@ -298,6 +335,8 @@ def entry(
     head = f"{'#' * level} {'class ' if is_class else ''}{sym.__qualname__}"
     if is_class and issubclass(sym, BaseModel):
         parts = [head, doc(sym), fields_table(sym, mod)]
+    elif is_class and typing.is_typeddict(sym):
+        parts = [head, doc(sym), keys_table(sym, mod)]
     elif is_class and not has_init(sym):
         parts = [head, doc(sym)]
     else:
@@ -331,6 +370,9 @@ def gaps_of(
     if is_class and issubclass(sym, BaseModel):
         fields = sym.model_fields.items()
         return out + [f"{name}.{n}: no description" for n, f in fields if not f.description]
+    if is_class and typing.is_typeddict(sym):
+        said = key_comments(sym)
+        return out + [f"{name}.{n}: no docment" for n in sym.__annotations__ if n not in said]
     if is_class and not has_init(sym):
         return out
     for pname, d in docments(sym, full=True).items():
@@ -361,11 +403,13 @@ def gaps(
 
 def check(
     package: str = PACKAGE,  # The package to hold to the convention
-    tests: Path | None = None,  # A folder of tests to hold to it too, or `None`
+    root: Path = ROOT,  # The repository's root, whose own Python files are held to it too
 ) -> int:  # The exit code: 0 when nothing is missing, 1 otherwise
     """Print how much of each module is typed and documented, then every gap, then the total."""
     found, done, total = [], 0, 0
-    for mod in package_modules(package) + (file_modules(tests) if tests else []):
+    if str(root.resolve()) not in sys.path:
+        sys.path.insert(0, str(root.resolve()))  # a test imports its helpers as tests.tiny
+    for mod in package_modules(package) + file_modules(python_files(root)):
         missing = gaps(mod)
         found += missing.pop(mod.__name__)
         complete = sum(not g for g in missing.values())
@@ -380,7 +424,7 @@ def check(
 def main(
     words: list[str],  # The words after `babykev docs`: `list`, `module NAME`, `check`, `help`
     package: str = PACKAGE,  # The package to document
-    tests: Path = TESTS,  # The folder of tests that `check` holds to the convention, if it exists
+    root: Path = ROOT,  # The repository's root, for the files `check` holds to the convention
 ) -> int:  # The exit code: 0, 1 when `check` finds a gap, 2 for words that are no command
     """Run one docs command and return its exit code."""
     if words in (["help"], ["--help"], ["-h"]):
@@ -402,6 +446,6 @@ def main(
             return 2
         return 0
     if words == ["check"]:
-        return check(package, tests if tests.is_dir() else None)
+        return check(package, root)
     print(USAGE, end="", file=sys.stderr)
     return 2

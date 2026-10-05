@@ -57,6 +57,12 @@ lint-config *args:
     uv lock --check
     just --fmt --check --unstable
 
+# Check the types: what a caller passes against what a function declares. Extra arguments go to ty
+[group('quality')]
+[no-exit-message]
+types *args:
+    {{ if args == "help" { "just help types" } else { 'uv run ty check "$@"' } }}
+
 # Run the tests, with coverage of src/babykev. Extra arguments go to pytest: just test -k render
 [group('quality')]
 [no-exit-message]
@@ -84,3 +90,14 @@ docs *args:
     if [ "$*" = help ]; then just help docs; exit 0; fi
     if [ "$#" -eq 0 ]; then exec uv run quarto render docs; fi
     exec uv run {{ program }} docs "$@"
+
+# Run everything that exists so far on the real model: just smoke local. Other platforms arrive later
+[group('model')]
+[no-exit-message]
+smoke *args:
+    #!/usr/bin/env sh
+    case "$*" in
+        help) just help smoke ;;
+        local) exec uv run {{ program }} smoke ;;
+        *) echo "smoke: the platform is local; $* is not here yet" >&2; exit 2 ;;
+    esac

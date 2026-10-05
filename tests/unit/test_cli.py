@@ -47,3 +47,15 @@ def test_docs_is_passed_to_the_docs_command(
         run(monkeypatch, "docs", "list")
     assert exit_info.value.code == 0
     assert "babykev.api" in capsys.readouterr().out
+
+
+def test_smoke_runs_the_smoke(
+    monkeypatch: pytest.MonkeyPatch,  # Replaces `sys.argv` and the smoke itself for this test only
+) -> None:
+    """`babykev smoke` runs the smoke's `main` with the words after it; here a stand-in."""
+    ran = []
+    monkeypatch.setattr("babykev.smoke.main", lambda words: ran.append(words) or 0)
+    with pytest.raises(SystemExit) as exit_info:
+        run(monkeypatch, "smoke")
+    assert exit_info.value.code == 0
+    assert ran == [[]]

@@ -1,0 +1,824 @@
+[
+  {
+    "objectID": "api/docs.html",
+    "href": "api/docs.html",
+    "title": "babykev.docs",
+    "section": "",
+    "text": "babykev docs list every module, class, method and function, one line each babykev docs module NAME one module: a heading per symbol, its signature, docstring and table babykev docs check count what is typed and documented, list every gap, fail if any\nTypes come from the annotations, the description of a parameter from its docment (the comment beside it, read by fastcore) and the summary from the docstring. Nothing is written twice. The output is plain Markdown with no links, ids or URLs, so that a person, an agent or the docs site can read it. list and module show the package; check holds the package, the tests, and the Python files at the root and under docs/ to the convention.\nHow to write a docment, so that the formatter and the linter leave it alone: one parameter per line, a trailing comma after the last, the comment two spaces after the code; the return’s comment after the colon of the def line. Every function in this file is an example. The whole line must fit in 100 characters: the formatter wraps a longer line, the comment lands away from its parameter, and check reports it as missing. The formatter never joins a line that carries a comment, and no lint rule looks inside one.",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#Symbol",
+    "href": "api/docs.html#Symbol",
+    "title": "babykev.docs",
+    "section": "class Symbol",
+    "text": "class Symbol\nsource\nSymbol(module: str, name: str, kind: str, summary: str, line: int)\nOne line of the inventory: a module, a class, a method or a function, and where it is.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nmodule\nstr\nrequired\nThe module’s full name, such as babykev.api\n\n\nname\nstr\nrequired\nrender or Choice._check: the name inside the module; empty for the module\n\n\nkind\nstr\nrequired\nmodule, class, method or function\n\n\nsummary\nstr\nrequired\nThe first line of the docstring, or empty when there is none\n\n\nline\nint\nrequired\nThe line the definition starts on; 1 for a module",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#package_modules",
+    "href": "api/docs.html#package_modules",
+    "title": "babykev.docs",
+    "section": "package_modules",
+    "text": "package_modules\nsource\npackage_modules(package: str = 'babykev') -&gt; list[ModuleType]\nImport every public module of a package, in name order.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\npackage\nstr\n'babykev'\nThe name of an importable package\n\n\nreturns\nlist[ModuleType]\n\nIts public modules, in name order",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#python_files",
+    "href": "api/docs.html#python_files",
+    "title": "babykev.docs",
+    "section": "python_files",
+    "text": "python_files\nsource\npython_files(root: Path) -&gt; list[Path]\nFind the Python files that are not the package and are held to the convention too.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nroot\nPath\nrequired\nThe repository’s root\n\n\nreturns\nlist[Path]\n\nEvery .py file at the root, under docs/ and under tests/, in that order",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#file_modules",
+    "href": "api/docs.html#file_modules",
+    "title": "babykev.docs",
+    "section": "file_modules",
+    "text": "file_modules\nsource\nfile_modules(files: list[Path]) -&gt; list[ModuleType]\nImport Python files as modules of their own, named by their paths.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nfiles\nlist[Path]\nrequired\nPython files that are not part of a package\n\n\nreturns\nlist[ModuleType]\n\nOne module per file, named by its path, in the order given",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#module",
+    "href": "api/docs.html#module",
+    "title": "babykev.docs",
+    "section": "module",
+    "text": "module\nsource\nmodule(name: str, package: str = 'babykev') -&gt; ModuleType\nFind one module of the package by its short name or its full name.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nname\nstr\nrequired\nThe module’s short name, api, or its full name, babykev.api\n\n\npackage\nstr\n'babykev'\nThe package to look in\n\n\nreturns\nModuleType\n\nThe imported module; LookupError when the package has no such module",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#doc",
+    "href": "api/docs.html#doc",
+    "title": "babykev.docs",
+    "section": "doc",
+    "text": "doc\nsource\ndoc(obj: object) -&gt; str\nRead an object’s own docstring, cleaned of its indentation; empty when there is none.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nobj\nobject\nrequired\nA module, class or function\n\n\nreturns\nstr\n\nIts own docstring, cleaned of its indentation; empty when there is none",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#summary",
+    "href": "api/docs.html#summary",
+    "title": "babykev.docs",
+    "section": "summary",
+    "text": "summary\nsource\nsummary(obj: object) -&gt; str\nRead the first line of an object’s docstring.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nobj\nobject\nrequired\nA module, class or function\n\n\nreturns\nstr\n\nThe first line of its docstring; empty when there is none",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#line_of",
+    "href": "api/docs.html#line_of",
+    "title": "babykev.docs",
+    "section": "line_of",
+    "text": "line_of\nsource\nline_of(sym: Code) -&gt; int\nFind the line a symbol’s definition starts on, to keep symbols in source order.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nsym\nCode\nrequired\nA function, method or class\n\n\nreturns\nint\n\nThe line its definition starts on",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#unwrapped",
+    "href": "api/docs.html#unwrapped",
+    "title": "babykev.docs",
+    "section": "unwrapped",
+    "text": "unwrapped\nsource\nunwrapped(obj: object) -&gt; object\nSee through a decorator that kept the function, as functools.wraps and a fixture do.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nobj\nobject\nrequired\nAnything a module or a class holds under a name\n\n\nreturns\nobject\n\nThe function inside it when it is a decorator’s wrapper; otherwise the object itself",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#own",
+    "href": "api/docs.html#own",
+    "title": "babykev.docs",
+    "section": "own",
+    "text": "own\nsource\nown(mod: ModuleType, private: bool = False) -&gt; list[Code]\nList the functions and classes a module defines itself, in source order; not its imports.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nmod\nModuleType\nrequired\nAn imported module\n\n\nprivate\nbool\nFalse\nInclude names that start with an underscore\n\n\nreturns\nlist[Code]\n\nThe functions and classes the module defines, in source order",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#is_dunder",
+    "href": "api/docs.html#is_dunder",
+    "title": "babykev.docs",
+    "section": "is_dunder",
+    "text": "is_dunder\nsource\nis_dunder(name: str) -&gt; bool\nTell whether a name is one of Python’s own, such as __init__: a dataclass writes those.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nname\nstr\nrequired\nAn attribute name\n\n\nreturns\nbool\n\nWhether it is one of Python’s own, written __like_this__",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#methods",
+    "href": "api/docs.html#methods",
+    "title": "babykev.docs",
+    "section": "methods",
+    "text": "methods\nsource\nmethods(klass: type, private: bool = False) -&gt; list[FunctionType]\nList the methods a class defines itself, in source order, not what it inherits.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nklass\ntype\nrequired\nA class\n\n\nprivate\nbool\nFalse\nInclude names that start with one underscore\n\n\nreturns\nlist[FunctionType]\n\nThe methods the class defines, in source order",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#held",
+    "href": "api/docs.html#held",
+    "title": "babykev.docs",
+    "section": "held",
+    "text": "held\nsource\nheld(mod: ModuleType) -&gt; list[Code]\nList everything check holds to the convention: every function, class and method.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nmod\nModuleType\nrequired\nAn imported module\n\n\nreturns\nlist[Code]\n\nEvery function, class and method in it, private ones too",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#inventory",
+    "href": "api/docs.html#inventory",
+    "title": "babykev.docs",
+    "section": "inventory",
+    "text": "inventory\nsource\ninventory(package: str = 'babykev') -&gt; list[Symbol]\nList every public module, class, method and function of a package, with its summary.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\npackage\nstr\n'babykev'\nThe name of an importable package\n\n\nreturns\nlist[Symbol]\n\nOne entry per public module, class, method and function, in source order",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#name_of",
+    "href": "api/docs.html#name_of",
+    "title": "babykev.docs",
+    "section": "name_of",
+    "text": "name_of\nsource\nname_of(anno: object, mod: ModuleType) -&gt; str | None\nFind what a module calls a type: an alias such as JSONContent, or the name it imported.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nanno\nobject\nrequired\nA type, as an annotation holds it\n\n\nmod\nModuleType\nrequired\nThe module the annotation was written in\n\n\nreturns\nstr | None\n\nThe name that module gives the type, or None when it has none",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#type_text",
+    "href": "api/docs.html#type_text",
+    "title": "babykev.docs",
+    "section": "type_text",
+    "text": "type_text\nsource\ntype_text(anno: object, mod: ModuleType) -&gt; str\nWrite a type the way the source does: JSONContent, not the union it stands for.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nanno\nobject\nrequired\nA type, as an annotation holds it\n\n\nmod\nModuleType\nrequired\nThe module the annotation was written in\n\n\nreturns\nstr\n\nThe type as the source would write it",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#signature",
+    "href": "api/docs.html#signature",
+    "title": "babykev.docs",
+    "section": "signature",
+    "text": "signature\nsource\nsignature(sym: Code, mod: ModuleType) -&gt; str\nWrite a signature as one line of Python: each parameter with its type and default.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nsym\nCode\nrequired\nA function, method or class\n\n\nmod\nModuleType\nrequired\nThe module it was written in\n\n\nreturns\nstr\n\nIts parameters and return as one line of Python, without the name",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#cell",
+    "href": "api/docs.html#cell",
+    "title": "babykev.docs",
+    "section": "cell",
+    "text": "cell\nsource\ncell(text: str) -&gt; str\nMake text safe inside a Markdown table cell.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ntext\nstr\nrequired\nThe text of one cell\n\n\nreturns\nstr\n\nThe same text with every \\| escaped",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#table",
+    "href": "api/docs.html#table",
+    "title": "babykev.docs",
+    "section": "table",
+    "text": "table\nsource\ntable(rows: list[list[str]], head: list[str]) -&gt; str\nWrite a Markdown table, or nothing when there are no rows.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nrows\nlist[list[str]]\nrequired\nThe cells of each row\n\n\nhead\nlist[str]\nrequired\nThe column titles\n\n\nreturns\nstr\n\nA Markdown table; empty when there are no rows",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#params_table",
+    "href": "api/docs.html#params_table",
+    "title": "babykev.docs",
+    "section": "params_table",
+    "text": "params_table\nsource\nparams_table(sym: Code, mod: ModuleType) -&gt; str\nDescribe a function by its parameters and its return: type, default, docment.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nsym\nCode\nrequired\nA function, method or dataclass\n\n\nmod\nModuleType\nrequired\nThe module it was written in\n\n\nreturns\nstr\n\nA Markdown table of its parameters and its return: type, default, description",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#fields_table",
+    "href": "api/docs.html#fields_table",
+    "title": "babykev.docs",
+    "section": "fields_table",
+    "text": "fields_table\nsource\nfields_table(model: type[BaseModel], mod: ModuleType) -&gt; str\nDescribe a pydantic model by its fields, because its constructor signature says nothing.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nmodel\ntype[BaseModel]\nrequired\nA pydantic model class\n\n\nmod\nModuleType\nrequired\nThe module it was written in\n\n\nreturns\nstr\n\nA Markdown table of its fields: type, default, description",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#key_comments",
+    "href": "api/docs.html#key_comments",
+    "title": "babykev.docs",
+    "section": "key_comments",
+    "text": "key_comments\nsource\nkey_comments(klass: type) -&gt; dict[str, str]\nRead the docments of a TypedDict: the comment beside each key in the class body.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nklass\ntype\nrequired\nA TypedDict class\n\n\nreturns\ndict[str, str]\n\nFor each key that has one, the comment beside it",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#keys_table",
+    "href": "api/docs.html#keys_table",
+    "title": "babykev.docs",
+    "section": "keys_table",
+    "text": "keys_table\nsource\nkeys_table(klass: type, mod: ModuleType) -&gt; str\nDescribe a TypedDict by its keys, because calling it says nothing.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nklass\ntype\nrequired\nA TypedDict class\n\n\nmod\nModuleType\nrequired\nThe module it was written in\n\n\nreturns\nstr\n\nA Markdown table of its keys: type, description",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#has_init",
+    "href": "api/docs.html#has_init",
+    "title": "babykev.docs",
+    "section": "has_init",
+    "text": "has_init\nsource\nhas_init(klass: type) -&gt; bool\nTell whether a class has a constructor of its own to show, as a dataclass does.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nklass\ntype\nrequired\nA class\n\n\nreturns\nbool\n\nWhether it has a constructor of its own, written by hand or by dataclass",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#entry",
+    "href": "api/docs.html#entry",
+    "title": "babykev.docs",
+    "section": "entry",
+    "text": "entry\nsource\nentry(sym: Code, level: int) -&gt; str\nWrite one symbol: a heading, its signature, its docstring and the table of its parameters.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nsym\nCode\nrequired\nA function, method or class\n\n\nlevel\nint\nrequired\nThe heading level of its entry: 2 for a top-level symbol, 3 for a method\n\n\nreturns\nstr\n\nThe Markdown of one entry",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#markdown",
+    "href": "api/docs.html#markdown",
+    "title": "babykev.docs",
+    "section": "markdown",
+    "text": "markdown\nsource\nmarkdown(name: str, package: str = 'babykev') -&gt; str\nWrite one module as plain Markdown: its docstring, then an entry for each public symbol.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nname\nstr\nrequired\nThe module’s short name, api, or its full name, babykev.api\n\n\npackage\nstr\n'babykev'\nThe package to look in\n\n\nreturns\nstr\n\nThe whole module as plain Markdown",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#gaps_of",
+    "href": "api/docs.html#gaps_of",
+    "title": "babykev.docs",
+    "section": "gaps_of",
+    "text": "gaps_of\nsource\ngaps_of(sym: Code) -&gt; list[str]\nFind what one symbol is missing: a docstring, a type, a docment, or a field description.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nsym\nCode\nrequired\nA function, method or class\n\n\nreturns\nlist[str]\n\nOne message per gap; empty when the symbol is fully typed and documented",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#gaps",
+    "href": "api/docs.html#gaps",
+    "title": "babykev.docs",
+    "section": "gaps",
+    "text": "gaps\nsource\ngaps(mod: ModuleType) -&gt; dict[str, list[str]]\nFind every gap in a module, under the module’s name and then under each symbol’s.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nmod\nModuleType\nrequired\nAn imported module\n\n\nreturns\ndict[str, list[str]]\n\nThe gaps of each symbol under its name, the module’s under its own",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#check",
+    "href": "api/docs.html#check",
+    "title": "babykev.docs",
+    "section": "check",
+    "text": "check\nsource\ncheck(package: str = 'babykev', root: Path = Path('.')) -&gt; int\nPrint how much of each module is typed and documented, then every gap, then the total.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\npackage\nstr\n'babykev'\nThe package to hold to the convention\n\n\nroot\nPath\nPath('.')\nThe repository’s root, whose own Python files are held to it too\n\n\nreturns\nint\n\nThe exit code: 0 when nothing is missing, 1 otherwise",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/docs.html#main",
+    "href": "api/docs.html#main",
+    "title": "babykev.docs",
+    "section": "main",
+    "text": "main\nsource\nmain(words: list[str], package: str = 'babykev', root: Path = Path('.')) -&gt; int\nRun one docs command and return its exit code.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nwords\nlist[str]\nrequired\nThe words after babykev docs: list, module NAME, check, help\n\n\npackage\nstr\n'babykev'\nThe package to document\n\n\nroot\nPath\nPath('.')\nThe repository’s root, for the files check holds to the convention\n\n\nreturns\nint\n\nThe exit code: 0, 1 when check finds a gap, 2 for words that are no command",
+    "crumbs": [
+      "Reference",
+      "babykev.docs"
+    ]
+  },
+  {
+    "objectID": "api/api.html",
+    "href": "api/api.html",
+    "title": "babykev.api",
+    "section": "",
+    "text": "Noul -&gt; two options, no and yes; answer = p(yes) Choice -&gt; one option per criterion; answer = the likeliest, probabilities by name, confidence Score -&gt; one option per level, in order; answer = expected level, legend, probabilities by level",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#Noul",
+    "href": "api/api.html#Noul",
+    "title": "babykev.api",
+    "section": "class Noul",
+    "text": "class Noul\nsource\nA yes-or-no question.\n\n\n\n\n\n\n\n\n\nField\nType\nDefault\nDescription\n\n\n\n\ntype\nLiteral[‘noul’]\nrequired\nMarks the question as yes-or-no\n\n\ninstructions\nJSONContent\nrequired\nThe question, as text or as structured content\n\n\ncriteria\ndict[str, JSONContent] | None\nNone\nWhat no and yes mean, under the keys false and true. May be left out",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#Choice",
+    "href": "api/api.html#Choice",
+    "title": "babykev.api",
+    "section": "class Choice",
+    "text": "class Choice\nsource\nA question answered by picking one of several named options.\n\n\n\n\n\n\n\n\n\nField\nType\nDefault\nDescription\n\n\n\n\ntype\nLiteral[‘choice’]\nrequired\nMarks the question as a choice\n\n\ninstructions\nJSONContent\nrequired\nThe question, as text or as structured content\n\n\ncriteria\ndict[str, JSONContent]\nrequired\nEach option’s name with its description, or null when the name says enough",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#Score",
+    "href": "api/api.html#Score",
+    "title": "babykev.api",
+    "section": "class Score",
+    "text": "class Score\nsource\nA question answered with a level on an ordered scale.\n\n\n\n\n\n\n\n\n\nField\nType\nDefault\nDescription\n\n\n\n\ntype\nLiteral[‘score’]\nrequired\nMarks the question as a score\n\n\ninstructions\nJSONContent\nrequired\nThe question, as text or as structured content\n\n\ncriteria\nlist[JSONContent]\nrequired\nThe levels of the scale, from lowest to highest",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#SystemOneRequest",
+    "href": "api/api.html#SystemOneRequest",
+    "title": "babykev.api",
+    "section": "class SystemOneRequest",
+    "text": "class SystemOneRequest\nsource\nOne request: a state, and the questions to answer about it.\n\n\n\n\n\n\n\n\n\nField\nType\nDefault\nDescription\n\n\n\n\nstate\nJSONContent\nrequired\nThe context: the document the questions are about\n\n\nquestions\ndict[str, Question]\nrequired\nThe questions, each under an id the caller chooses",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#render",
+    "href": "api/api.html#render",
+    "title": "babykev.api",
+    "section": "render",
+    "text": "render\nsource\nrender(v: JSONContent, indent: int = 0) -&gt; str\nFlatten str | object | array into text the model sees. Field names are kept as labels.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nv\nJSONContent\nrequired\nText, a number, a list or an object, from a request\n\n\nindent\nint\n0\nHow deeply nested this value is; each level indents by two spaces\n\n\nreturns\nstr\n\nThe text the model sees",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#option_text",
+    "href": "api/api.html#option_text",
+    "title": "babykev.api",
+    "section": "option_text",
+    "text": "option_text\nsource\noption_text(name: str, desc: JSONContent) -&gt; str\nWrite one option as the model sees it.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nname\nstr\nrequired\nThe option’s name\n\n\ndesc\nJSONContent\nrequired\nIts description, or None or an empty string when the name says enough\n\n\nreturns\nstr\n\nname, or name: description",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#to_record",
+    "href": "api/api.html#to_record",
+    "title": "babykev.api",
+    "section": "to_record",
+    "text": "to_record\nsource\nto_record(req: SystemOneRequest) -&gt; tuple[dict[str, Any], list[dict[str, Any]]]\n-&gt; internal record for encode(), plus per-question metadata to map probabilities back.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nreq\nSystemOneRequest\nrequired\nA validated request\n\n\nreturns\ntuple[dict[str, Any], list[dict[str, Any]]]\n\nThe record, and one metadata entry per question",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#choice_confidence",
+    "href": "api/api.html#choice_confidence",
+    "title": "babykev.api",
+    "section": "choice_confidence",
+    "text": "choice_confidence\nsource\nchoice_confidence(p: list[float]) -&gt; float\nMeasure how far the most likely option stands above a guess among len(p) options.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\np\nlist[float]\nrequired\nThe probability of each option\n\n\nreturns\nfloat\n\n0 for a guess, 1 when one option has all the probability",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#score_confidence",
+    "href": "api/api.html#score_confidence",
+    "title": "babykev.api",
+    "section": "score_confidence",
+    "text": "score_confidence\nsource\nscore_confidence(p: list[float]) -&gt; float\nMeasure how closely a score’s probabilities sit around the most likely level.\n1 when one level has all the probability, 0 for a guess or anything as spread out. The expected distance from the most likely level is divided by the distance a guess would have: equal probability on every level, measured from the middle of the scale.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\np\nlist[float]\nrequired\nThe probability of each level, lowest level first\n\n\nreturns\nfloat\n\n1 when one level has all the probability, 0 for a guess or anything as spread out",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#round_prob",
+    "href": "api/api.html#round_prob",
+    "title": "babykev.api",
+    "section": "round_prob",
+    "text": "round_prob\nsource\nround_prob(x: float) -&gt; float\nRound a number for output.\nFour decimals keep a rounded distribution’s sum within 0.02 of 1 even with MAX_OPTIONS options. Two decimals did not: 77 equal options summed to 0.77.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nx\nfloat\nrequired\nA probability, or a number worked out from probabilities\n\n\nreturns\nfloat\n\nThe same number to four decimals",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/api.html#to_answers",
+    "href": "api/api.html#to_answers",
+    "title": "babykev.api",
+    "section": "to_answers",
+    "text": "to_answers\nsource\nto_answers(probs: list[list[float]], meta: list[dict[str, Any]]) -&gt; dict[str, Any]\nTurn the model’s probabilities into answers of each question’s type.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nprobs\nlist[list[float]]\nrequired\nFor each question, the probability of each of its options\n\n\nmeta\nlist[dict[str, Any]]\nrequired\nThe metadata to_record returned for the same request\n\n\nreturns\ndict[str, Any]\n\nOne answer per question, under the question’s id",
+    "crumbs": [
+      "Reference",
+      "babykev.api"
+    ]
+  },
+  {
+    "objectID": "api/cli.html",
+    "href": "api/cli.html",
+    "title": "babykev.cli",
+    "section": "",
+    "text": "source\nmain() -&gt; None\nRun the command named by the first word, print the help, or refuse any other word.",
+    "crumbs": [
+      "Reference",
+      "babykev.cli"
+    ]
+  },
+  {
+    "objectID": "api/cli.html#main",
+    "href": "api/cli.html#main",
+    "title": "babykev.cli",
+    "section": "",
+    "text": "source\nmain() -&gt; None\nRun the command named by the first word, print the help, or refuse any other word.",
+    "crumbs": [
+      "Reference",
+      "babykev.cli"
+    ]
+  },
+  {
+    "objectID": "guide/01_mask.html",
+    "href": "guide/01_mask.html",
+    "title": "The mask",
+    "section": "",
+    "text": "A request asks several questions about one context. The model reads the context once and answers every question in the same pass, and yet no question can influence another. What makes that possible is the attention mask, built by branch_mask.\nThis page is a notebook. The reference entry below is pulled from the source, and the grids are what the code printed when the notebook was last run.\ndef branch_mask(\n    seg:list[int], # The segment of each token: 0 for the state, k for question k\n    device:str, # Where to build the mask\n    dtype:torch.dtype=torch.float32, # The number type of the model's attention scores\n)-&gt;torch.Tensor: # Shape [1, 1, n, n]: 0 where i may attend to j, very negative elsewhere\nBuild the block-causal mask: a token sees the state and its own question, never a sibling.\nToken i may attend to token j when j is not after i, and j is in the state or in the same question as i. The mask is added to the attention scores, so a blocked pair gets the most negative number the type can hold.",
+    "crumbs": [
+      "Guide",
+      "The mask"
+    ]
+  },
+  {
+    "objectID": "guide/01_mask.html#a-small-request",
+    "href": "guide/01_mask.html#a-small-request",
+    "title": "The mask",
+    "section": "A small request",
+    "text": "A small request\nTake three context tokens, then two questions of two tokens each. encode gives every token a segment: 0 for the context, 1 for the first question, 2 for the second. In the grid, each row is a token, and a filled cell means it may attend to the token in that column.\n\ndef show(seg, mask=branch_mask):\n    allow = mask(seg, \"cpu\")[0, 0] == 0\n    print(\"   \" + \" \".join(str(s) for s in seg))\n    for s, row in zip(seg, allow, strict=True):\n        print(f\"{s}  \" + \" \".join(\"#\" if ok else \".\" for ok in row))\n\n\nshow([0, 0, 0, 1, 1, 2, 2])\n\n   0 0 0 1 1 2 2\n0  # . . . . . .\n0  # # . . . . .\n0  # # # . . . .\n1  # # # # . . .\n1  # # # # # . .\n2  # # # . . # .\n2  # # # . . # #\n\n\nRead the last two rows. The second question sees the three context tokens and itself. The two columns of the first question are empty: to the second question, the first one is not there.",
+    "crumbs": [
+      "Guide",
+      "The mask"
+    ]
+  },
+  {
+    "objectID": "guide/01_mask.html#the-rule",
+    "href": "guide/01_mask.html#the-rule",
+    "title": "The mask",
+    "section": "The rule",
+    "text": "The rule\nToken i may attend to token j when j is not later than i, and j is in the context or in the same question as i. Nothing else. A longer request shows the same blocks:\n\nshow([0, 0, 1, 1, 1, 2, 3, 3])\n\n   0 0 1 1 1 2 3 3\n0  # . . . . . . .\n0  # # . . . . . .\n1  # # # . . . . .\n1  # # # # . . . .\n1  # # # # # . . .\n2  # # . . . # . .\n3  # # . . . . # .\n3  # # . . . . # #",
+    "crumbs": [
+      "Guide",
+      "The mask"
+    ]
+  },
+  {
+    "objectID": "guide/01_mask.html#the-mask-as-it-was-at-step-05",
+    "href": "guide/01_mask.html#the-mask-as-it-was-at-step-05",
+    "title": "The mask",
+    "section": "The mask as it was at step 05",
+    "text": "The mask as it was at step 05\nThe model arrived with a plain causal mask, the usual one for a language model: every token sees everything before it. Here is the same request under that mask. The second question’s rows now have the first question’s columns filled: it reads the first question as if it were part of the context. Nothing crashes, the model still returns probabilities, and the answers to one question depend on which questions were asked before it. Only a test of the rule above can tell.\n\nimport torch\n\n\ndef plain_causal_mask(seg, device, dtype=torch.float32):\n    n = len(seg)\n    causal = torch.tril(torch.ones(n, n, dtype=torch.bool, device=device))\n    blocked = torch.finfo(dtype).min\n    return torch.zeros(n, n, dtype=dtype, device=device).masked_fill(~causal, blocked)[None, None]\n\n\nshow([0, 0, 0, 1, 1, 2, 2], plain_causal_mask)\n\n   0 0 0 1 1 2 2\n0  # . . . . . .\n0  # # . . . . .\n0  # # # . . . .\n1  # # # # . . .\n1  # # # # # . .\n2  # # # # # # .\n2  # # # # # # #",
+    "crumbs": [
+      "Guide",
+      "The mask"
+    ]
+  },
+  {
+    "objectID": "guide/01_mask.html#why-it-matters",
+    "href": "guide/01_mask.html#why-it-matters",
+    "title": "The mask",
+    "section": "Why it matters",
+    "text": "Why it matters\nBecause of this mask, three questions packed into one request get exactly the answers they would get in three separate requests. That is a property of the mask and not of the weights, so the tests check it on a tiny model with random weights. The other half of the trick is in encode: each question’s positions restart right after the context, so a question looks the same to the model whether it comes first or last. PointerHead then reads the answer off the question’s own tokens, and DecisionModel puts the pieces together.",
+    "crumbs": [
+      "Guide",
+      "The mask"
+    ]
+  },
+  {
+    "objectID": "guide/00_model.html",
+    "href": "guide/00_model.html",
+    "title": "The model",
+    "section": "",
+    "text": "babykev is a language model that has been taught to point instead of to speak. Four ideas make that work, and each is one piece of model.py. The reference pages hold the signatures; this page holds the reasons.",
+    "crumbs": [
+      "Guide",
+      "The model"
+    ]
+  },
+  {
+    "objectID": "guide/00_model.html#packing",
+    "href": "guide/00_model.html#packing",
+    "title": "The model",
+    "section": "1. Packing",
+    "text": "1. Packing\nA request is one context and several questions. encode writes all of it into a single sequence of tokens, in this order: a delimiter and the context, then for each question a delimiter, the instruction, each option between an opening and a closing delimiter, and a decide delimiter where the question ends. The five delimiters are special tokens the base model already has and rarely uses, listed in SPECIAL, so no embedding has to be added or trained: the adapter learns their new meaning.\nText that comes from a caller goes through user_tokens first, which rewrites anything that looks like a special token before tokenizing it. Without that, a context containing the text of the closing delimiter could close an option early. The tests put the delimiters’ text into every field and count the delimiters that come out.\nencode returns an Encoded: the ids, and three things the model needs to read them correctly: the segment of each token (0 for the context, k for question k), the position of each token, and where each question’s decide token and option tokens are.",
+    "crumbs": [
+      "Guide",
+      "The model"
+    ]
+  },
+  {
+    "objectID": "guide/00_model.html#the-mask",
+    "href": "guide/00_model.html#the-mask",
+    "title": "The model",
+    "section": "2. The mask",
+    "text": "2. The mask\nThe questions share one reading of the context, and nothing else. branch_mask builds the attention mask that makes this true: token i may attend to token j only when j is not after i, and j is in the context or in the same question as i. The mask is added to the attention scores, so a blocked pair gets the most negative number the number type can hold.\nBecause of this mask, three questions packed into one request get exactly the answers they would get in three separate requests, and the tests check that to the last decimal. The next page shows the mask as a grid.",
+    "crumbs": [
+      "Guide",
+      "The model"
+    ]
+  },
+  {
+    "objectID": "guide/00_model.html#positions-restart",
+    "href": "guide/00_model.html#positions-restart",
+    "title": "The model",
+    "section": "3. Positions restart",
+    "text": "3. Positions restart\nEvery question’s positions begin right after the context. To the model, a question looks the same wherever it comes in the request, and the tests check that reversing the order of the questions changes nothing.",
+    "crumbs": [
+      "Guide",
+      "The model"
+    ]
+  },
+  {
+    "objectID": "guide/00_model.html#pointing",
+    "href": "guide/00_model.html#pointing",
+    "title": "The model",
+    "section": "4. Pointing",
+    "text": "4. Pointing\nPointerHead is two small projections. At each question’s decide token it takes the hidden state and projects it; at each option’s closing token it takes the hidden state and projects it; the scaled dot product of the two is the option’s score. One pass gives every question its scores at once. The base model’s vocabulary head is dropped: DecisionModel keeps only the transformer, wraps it in a LoRA adapter when asked, and adds the head. The model has no way to generate text.",
+    "crumbs": [
+      "Guide",
+      "The model"
+    ]
+  },
+  {
+    "objectID": "guide/00_model.html#what-trains",
+    "href": "guide/00_model.html#what-trains",
+    "title": "The model",
+    "section": "What trains",
+    "text": "What trains\nWith an adapter, the backbone is frozen. Gradients reach the adapter’s matrices and the pointer head and nothing else; trainable_parameters lists exactly those. The smoke run reports how many parameters that is: about 9 million of 503 million.",
+    "crumbs": [
+      "Guide",
+      "The model"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "babykev",
+    "section": "",
+    "text": "babykev is a small decision model. You send it one document, the context (the state field of a request), and a set of typed questions about it. It returns a probability for every possible answer to every question, in one forward pass. It generates no text.",
+    "crumbs": [
+      "babykev"
+    ]
+  },
+  {
+    "objectID": "index.html#the-contract",
+    "href": "index.html#the-contract",
+    "title": "babykev",
+    "section": "The contract",
+    "text": "The contract\nA request is a SystemOneRequest: a context and one or more questions, each a Noul, a Choice or a Score. to_record turns the request into the text and the options the model sees, and to_answers turns the model’s probabilities back into answers.",
+    "crumbs": [
+      "babykev"
+    ]
+  },
+  {
+    "objectID": "index.html#the-reference",
+    "href": "index.html#the-reference",
+    "title": "babykev",
+    "section": "The reference",
+    "text": "The reference\nThe pages under Reference are generated from the source, by babykev docs module NAME. Types come from the annotations, the description of each parameter from the comment beside it, and the summary from the docstring. A name in backticks, anywhere on this site, links to its entry: render, choice_confidence, score_confidence. The same text, as plain Markdown, is what babykev docs list and babykev docs module api print at the terminal, for people and for agents.",
+    "crumbs": [
+      "babykev"
+    ]
+  },
+  {
+    "objectID": "api/model.html",
+    "href": "api/model.html",
+    "title": "babykev.model",
+    "section": "",
+    "text": "Four ideas make a language model into a decision model.\nDecisionModel puts them together around a backbone, with a LoRA adapter if asked for.",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#Encoded",
+    "href": "api/model.html#Encoded",
+    "title": "babykev.model",
+    "section": "class Encoded",
+    "text": "class Encoded\nsource\nOne packed record, ready for the model.\n\n\n\n\n\n\n\n\nKey\nType\nDescription\n\n\n\n\nids\nlist[int]\nThe token ids of the whole sequence\n\n\nseg\nlist[int]\nThe segment of each token: 0 for the state, k for question k\n\n\npos\nlist[int]\nThe position of each token; every question restarts right after the state\n\n\ndecide_idx\nlist[int]\nFor each question, where its decide token is\n\n\nopt_idx\nlist[list[int]]\nFor each question, where the closing token of each option is\n\n\nlabels\nlist[int]\nFor each question, the index of the right option",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#pick_device",
+    "href": "api/model.html#pick_device",
+    "title": "babykev.model",
+    "section": "pick_device",
+    "text": "pick_device\nsource\npick_device(override: str | None = None) -&gt; str\nChoose where the model runs: a CUDA GPU if there is one, then Apple’s GPU, then the CPU.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\noverride\nstr | None\nNone\nA device name to use whatever the machine has\n\n\nreturns\nstr\n\ncuda, mps or cpu",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#load_tokenizer",
+    "href": "api/model.html#load_tokenizer",
+    "title": "babykev.model",
+    "section": "load_tokenizer",
+    "text": "load_tokenizer\nsource\nload_tokenizer(name: str) -&gt; PreTrainedTokenizerBase\nLoad the tokenizer that belongs to a base model.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nname\nstr\nrequired\nA model name on the Hugging Face Hub, or a local folder\n\n\nreturns\nPreTrainedTokenizerBase\n\nIts tokenizer",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#delimiter_ids",
+    "href": "api/model.html#delimiter_ids",
+    "title": "babykev.model",
+    "section": "delimiter_ids",
+    "text": "delimiter_ids\nsource\ndelimiter_ids(tok: PreTrainedTokenizerBase) -&gt; list[int]\nLook up the token ids of the delimiters.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ntok\nPreTrainedTokenizerBase\nrequired\nThe base model’s tokenizer\n\n\nreturns\nlist[int]\n\nThe ids of the five delimiters, in the order of SPECIAL",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#user_tokens",
+    "href": "api/model.html#user_tokens",
+    "title": "babykev.model",
+    "section": "user_tokens",
+    "text": "user_tokens\nsource\nuser_tokens(tok: PreTrainedTokenizerBase, text: str) -&gt; list[int]\nTokenize a caller’s text so that it can never forge a delimiter.\nA tokenizer turns the string &lt;|box_end|&gt; into the special token of that name, wherever the string appears. Text that contained it could close an option early. So &lt;|name|&gt; is rewritten to &lt;¦name¦&gt; before tokenizing, which reads the same to a person and is ordinary text to the tokenizer.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ntok\nPreTrainedTokenizerBase\nrequired\nThe base model’s tokenizer\n\n\ntext\nstr\nrequired\nText that came from a caller: a state, an instruction or an option\n\n\nreturns\nlist[int]\n\nIts token ids, none of which is a delimiter or any other special token",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#encode",
+    "href": "api/model.html#encode",
+    "title": "babykev.model",
+    "section": "encode",
+    "text": "encode\nsource\nencode(tok: PreTrainedTokenizerBase, rec: dict[str, Any], max_state: int = 384, max_branch: int = 1024) -&gt; Encoded\nPack a record into one sequence: the state, then one branch for each question.\nThe state is the state delimiter and its text. A branch is the question delimiter, the instruction, each option between its two delimiters, and the decide delimiter. Raises ValueError when a branch does not fit in max_branch.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ntok\nPreTrainedTokenizerBase\nrequired\nThe base model’s tokenizer\n\n\nrec\ndict[str, Any]\nrequired\nA record, as to_record returns it: a state and its questions\n\n\nmax_state\nint\n384\nThe longest state kept, in tokens\n\n\nmax_branch\nint\n1024\nThe longest state and question together, in tokens\n\n\nreturns\nEncoded\n\nThe packed record",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#branch_mask",
+    "href": "api/model.html#branch_mask",
+    "title": "babykev.model",
+    "section": "branch_mask",
+    "text": "branch_mask\nsource\nbranch_mask(seg: list[int], device: str, dtype: dtype = torch.float32) -&gt; Tensor\nBuild the block-causal mask: a token sees the state and its own question, never a sibling.\nToken i may attend to token j when j is not after i, and j is in the state or in the same question as i. The mask is added to the attention scores, so a blocked pair gets the most negative number the type can hold.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nseg\nlist[int]\nrequired\nThe segment of each token: 0 for the state, k for question k\n\n\ndevice\nstr\nrequired\nWhere to build the mask\n\n\ndtype\ndtype\ntorch.float32\nThe number type of the model’s attention scores\n\n\nreturns\nTensor\n\nShape [1, 1, n, n]: 0 where i may attend to j, very negative elsewhere",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#PointerHead",
+    "href": "api/model.html#PointerHead",
+    "title": "babykev.model",
+    "section": "class PointerHead",
+    "text": "class PointerHead\nsource\nPointerHead(d: int, dp: int = 256)\nScores the options of one question against its decide token.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nd\nint\nrequired\nThe width of the backbone’s hidden states\n\n\ndp\nint\n256\nThe width of the space in which options and decide tokens are compared\n\n\n\n\nPointerHead.forward\nsource\nPointerHead.forward(h_decide: Tensor, h_opts: Tensor) -&gt; Tensor\nProject both sides and take their scaled dot products.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nh_decide\nTensor\nrequired\nThe hidden state at the decide token, shape [d]\n\n\nh_opts\nTensor\nrequired\nThe hidden states at the K options’ closing tokens, shape [K, d]\n\n\nreturns\nTensor\n\nOne logit per option, shape [K]",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/model.html#DecisionModel",
+    "href": "api/model.html#DecisionModel",
+    "title": "babykev.model",
+    "section": "class DecisionModel",
+    "text": "class DecisionModel\nsource\nDecisionModel(name: str, device: str, lora: int | None = None, backbone: PreTrainedModel | None = None)\nA language model without its vocabulary head, read through a mask, with a PointerHead.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nname\nstr\nrequired\nThe base model to load from the Hugging Face Hub, when no backbone is given\n\n\ndevice\nstr\nrequired\nWhere the model runs: cuda, mps or cpu\n\n\nlora\nint | None\nNone\nThe rank of a LoRA adapter to add, or None for no adapter\n\n\nbackbone\nPreTrainedModel | None\nNone\nA ready backbone, such as a small one in tests\n\n\n\n\nDecisionModel.hidden\nsource\nDecisionModel.hidden(enc: Encoded) -&gt; Tensor\nRun the backbone over a packed record, with its restarted positions and its mask.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nenc\nEncoded\nrequired\nA packed record\n\n\nreturns\nTensor\n\nThe hidden state of every token, shape [n, d]\n\n\n\n\n\nDecisionModel.forward\nsource\nDecisionModel.forward(enc: Encoded) -&gt; list[Tensor]\nScore every option of every question in one pass.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nenc\nEncoded\nrequired\nA packed record\n\n\nreturns\nlist[Tensor]\n\nFor each question, one logit per option\n\n\n\n\n\nDecisionModel.probs\nsource\nDecisionModel.probs(enc: Encoded) -&gt; list[Tensor]\nAnswer without tracking gradients: the logits of forward turned into probabilities.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nenc\nEncoded\nrequired\nA packed record\n\n\nreturns\nlist[Tensor]\n\nFor each question, the probability of each option, on the CPU\n\n\n\n\n\nDecisionModel.trainable_parameters\nsource\nDecisionModel.trainable_parameters() -&gt; list[Parameter]\nList the parameters that training changes.\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nreturns\nlist[Parameter]\n\nThe adapter’s and the head’s",
+    "crumbs": [
+      "Reference",
+      "babykev.model"
+    ]
+  },
+  {
+    "objectID": "api/smoke.html",
+    "href": "api/smoke.html",
+    "title": "babykev.smoke",
+    "section": "",
+    "text": "babykev smoke\nIt loads the base model with a fresh adapter and an untrained pointer head, asks it the questions in the sample data, and prints each answer beside its label. Nothing has been trained yet, so the answers are guesses. What the run shows is that the pieces fit: a line of data passes the contract, is packed into one sequence, goes through the model on whatever device there is, and comes back as answers.",
+    "crumbs": [
+      "Reference",
+      "babykev.smoke"
+    ]
+  },
+  {
+    "objectID": "api/smoke.html#read_lines",
+    "href": "api/smoke.html#read_lines",
+    "title": "babykev.smoke",
+    "section": "read_lines",
+    "text": "read_lines\nsource\nread_lines(path: Path = Path('data/cheese/sample.jsonl')) -&gt; list[dict[str, Any]]\nRead labelled requests from a JSONL file.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\npath\nPath\nPath('data/cheese/sample.jsonl')\nA JSONL file of labelled requests\n\n\nreturns\nlist[dict[str, Any]]\n\nOne labelled request per line of the file",
+    "crumbs": [
+      "Reference",
+      "babykev.smoke"
+    ]
+  },
+  {
+    "objectID": "api/smoke.html#answer",
+    "href": "api/smoke.html#answer",
+    "title": "babykev.smoke",
+    "section": "answer",
+    "text": "answer\nsource\nanswer(model: DecisionModel, tok: PreTrainedTokenizerBase, line: dict[str, Any]) -&gt; tuple[dict[str, Any], int, float]\nAnswer one request: the contract, then packing, then one forward pass, then answers.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nmodel\nDecisionModel\nrequired\nThe model that answers\n\n\ntok\nPreTrainedTokenizerBase\nrequired\nIts tokenizer\n\n\nline\ndict[str, Any]\nrequired\nOne labelled request\n\n\nreturns\ntuple[dict[str, Any], int, float]\n\nThe answers, the tokens packed, the seconds taken",
+    "crumbs": [
+      "Reference",
+      "babykev.smoke"
+    ]
+  },
+  {
+    "objectID": "api/smoke.html#verdict",
+    "href": "api/smoke.html#verdict",
+    "title": "babykev.smoke",
+    "section": "verdict",
+    "text": "verdict\nsource\nverdict(question: dict[str, Any], given: dict[str, Any]) -&gt; tuple[str, str, bool]\nPut one answer beside its label.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nquestion\ndict[str, Any]\nrequired\nOne question of a labelled request, with its label\n\n\ngiven\ndict[str, Any]\nrequired\nThe model’s answer to it\n\n\nreturns\ntuple[str, str, bool]\n\nWhat the model said, what the label says, and whether they agree",
+    "crumbs": [
+      "Reference",
+      "babykev.smoke"
+    ]
+  },
+  {
+    "objectID": "api/smoke.html#smoke",
+    "href": "api/smoke.html#smoke",
+    "title": "babykev.smoke",
+    "section": "smoke",
+    "text": "smoke\nsource\nsmoke(model: DecisionModel, tok: PreTrainedTokenizerBase, lines: list[dict[str, Any]]) -&gt; Iterator[str]\nAsk the model every question in lines and report each answer beside its label.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nmodel\nDecisionModel\nrequired\nThe model to try\n\n\ntok\nPreTrainedTokenizerBase\nrequired\nIts tokenizer\n\n\nlines\nlist[dict[str, Any]]\nrequired\nLabelled requests to ask it\n\n\nreturns\nIterator[str]\n\nThe report, a line at a time",
+    "crumbs": [
+      "Reference",
+      "babykev.smoke"
+    ]
+  },
+  {
+    "objectID": "api/smoke.html#main",
+    "href": "api/smoke.html#main",
+    "title": "babykev.smoke",
+    "section": "main",
+    "text": "main\nsource\nmain(words: list[str]) -&gt; int\nLoad the real model on the best device there is and run the smoke on the sample data.\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\nwords\nlist[str]\nrequired\nThe words after babykev smoke: none to run, help for the usage\n\n\nreturns\nint\n\nThe exit code: 0, or 2 for words that are no command",
+    "crumbs": [
+      "Reference",
+      "babykev.smoke"
+    ]
+  }
+]

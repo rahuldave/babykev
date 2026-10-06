@@ -150,6 +150,24 @@ git show step-00                # a step's full note, and what it changed
 git switch --detach step-00     # the project as it was at that step
 ```
 
+<!-- steps:start -->
+
+The commit of each step is linked here. On GitHub it shows what the step changed. `browse` shows the project as it was at the step.
+
+| Step | Commit | Code at the step | What it adds |
+|---|---|---|---|
+| `step-00` | [`ee96429`](https://github.com/rahuldave/babykev/commit/ee96429002cd04cb95e86e9a77e9c3d02a0e9497) | [browse](https://github.com/rahuldave/babykev/tree/step-00) | Where we start |
+| `step-01` | [`9cc0343`](https://github.com/rahuldave/babykev/commit/9cc0343527b93a817207a11a2866752807f0013d) | [browse](https://github.com/rahuldave/babykev/tree/step-01) | The contract: api.py, and its tests |
+| `step-02` | [`4681f25`](https://github.com/rahuldave/babykev/commit/4681f251318456e721cb4a7dcecbb9f73d3589cf) | [browse](https://github.com/rahuldave/babykev/tree/step-02) | Fix the two test errors, and format and lint |
+| `step-03` | [`651cd62`](https://github.com/rahuldave/babykev/commit/651cd62cf2d09d53225ed11c9befd7c2316ec1aa) | [browse](https://github.com/rahuldave/babykev/tree/step-03) | Clean code: formatted, linted, typed, docstrings, import order, test coverage |
+| `step-04` | [`d27a7f1`](https://github.com/rahuldave/babykev/commit/d27a7f152ade46e9024f0b97481b85fcce07a16c) | [browse](https://github.com/rahuldave/babykev/tree/step-04) | Documentation from the code |
+| `step-04b` | [`a9a391d`](https://github.com/rahuldave/babykev/commit/a9a391de1f271392a948cdd16afe2f3b1cfdd437) | [browse](https://github.com/rahuldave/babykev/tree/step-04b) | Every function documented |
+| `step-05` | [`46cf862`](https://github.com/rahuldave/babykev/commit/46cf8625a031e10049355df4c37abcb7af58d847) | [browse](https://github.com/rahuldave/babykev/tree/step-05) | A second file: model.py |
+| `step-05a` | [`c954af4`](https://github.com/rahuldave/babykev/commit/c954af4beae61eaab89bcb2d4724eea4f2706703) | [browse](https://github.com/rahuldave/babykev/tree/step-05a) | The tests that could tell |
+| `step-05b` | [`47b43c0`](https://github.com/rahuldave/babykev/commit/47b43c0916ac186e3efdf42e15dbcf1f04edb1a0) | [browse](https://github.com/rahuldave/babykev/tree/step-05b) | Two images from one lockfile |
+
+<!-- steps:end -->
+
 ## Licence
 
 Apache-2.0: see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). The original project kev's first commit carried no licence file; kev became Apache-2.0 three commits later.

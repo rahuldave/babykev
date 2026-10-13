@@ -101,3 +101,8 @@ def test_pointer_head_gives_one_logit_per_option() -> None:
 def test_pick_device_takes_an_override() -> None:
     """A device asked for by name is used, whatever the machine has."""
     assert pick_device("cpu") == "cpu"
+
+
+def test_pick_device_finds_something_to_run_on() -> None:
+    """With no override, the choice is one of the three kinds of device."""
+    assert pick_device() in {"cuda", "mps", "cpu"}

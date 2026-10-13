@@ -14,6 +14,7 @@ from babykev.api import (
     SystemOneRequest,
     option_text,
     render,
+    to_answers,
     to_record,
 )
 
@@ -201,3 +202,12 @@ def test_score_becomes_one_option_per_level_with_a_legend():
     record, meta = to_record(cheese_request())
     assert record["questions"][2]["options"] == FIRMNESS
     assert meta[2]["legend"] == {"0": "Soft", "1": "Semi-soft", "2": "Semi-hard", "3": "Hard"}
+
+
+# From probabilities to answers
+
+
+def test_noul_answer_is_the_probability_of_yes():
+    """The answer to a yes-or-no question is one number."""
+    answers = to_answers([[0.25, 0.75]], [{"id": "blue", "type": "noul"}])
+    assert answers == {"blue": {"type": "noul", "noul": 0.75}}

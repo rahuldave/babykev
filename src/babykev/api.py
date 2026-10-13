@@ -95,7 +95,9 @@ def option_text(
 
 def to_record(
     req: SystemOneRequest,  # A request that the contract has accepted
-) -> tuple[dict[str, Any], list[dict[str, Any]]]:  # The record that the model reads, and the metadata of each question
+) -> tuple[
+    dict[str, Any], list[dict[str, Any]]
+]:  # The record that the model reads, and the metadata of each question
     """-> internal record for encode(), plus per-question metadata to map probabilities back."""
     qs, meta = [], []
     for qid, q in req.questions.items():

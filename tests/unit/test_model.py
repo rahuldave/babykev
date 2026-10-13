@@ -54,3 +54,12 @@ def test_a_question_that_does_not_fit_is_refused(
     """A branch longer than the limit raises, and names its length."""
     with pytest.raises(ValueError, match="branch too long"):
         encode(tok, record, max_branch=80)
+
+
+def test_a_state_that_does_not_fit_is_refused(
+    tok: PreTrainedTokenizerFast,  # The tiny tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """A state longer than the limit raises, and names its length and the limit."""
+    with pytest.raises(ValueError, match="state too long: 62 tokens, the limit is 50"):
+        encode(tok, record, max_state=50)

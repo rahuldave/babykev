@@ -1,0 +1,14 @@
+# The hooks that git runs before each commit, once pre-commit is installed in the clone. If a hook
+# fails, git makes no commit.
+#
+# The project's own checks are one hook that runs `just check`, so the hook and the terminal run the
+# same thing.
+repos:
+  - repo: local
+    hooks:
+      - id: check
+        name: just check
+        entry: just check
+        language: system
+        pass_filenames: false
+        always_run: true

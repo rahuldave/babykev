@@ -58,6 +58,10 @@ Then run `just test`. `just` lists the tasks, `just help VERB` explains one, and
 help of the program itself. A recipe gives its extra words to the tool behind it. For example,
 `just test -k help` runs only the tests with `help` in their name.
 
+The model needs four packages, torch, transformers, peft and safetensors. torch is the build for the CPU,
+from the index of PyTorch that `pyproject.toml` names. On a Mac, the same build runs on the GPU of Apple
+too. With them, `.venv` takes about 750 MB, and torch is most of it.
+
 Run `just hook` once in each clone. It installs a git hook, which runs `just check` before each commit.
 `just check` runs every check of the project, and if one fails, git makes no commit. You can run `just check`
 yourself at any time.

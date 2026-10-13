@@ -3,9 +3,10 @@
 from typing import Any
 
 import pytest
+import torch
 from transformers import PreTrainedTokenizerFast
 
-from babykev.model import SPECIAL, DecisionModel, delimiter_ids, encode, user_tokens
+from babykev.model import SPECIAL, DecisionModel, PointerHead, delimiter_ids, encode, user_tokens
 
 
 def test_probabilities_sum_to_one_for_every_question(
@@ -81,3 +82,9 @@ def test_user_text_cannot_forge_a_delimiter(
     """Through `user_tokens`, the text of a delimiter is only ever ordinary tokens."""
     ids = user_tokens(tok, f"before {delimiter} after")
     assert not set(ids) & set(delimiter_ids(tok))
+
+
+def test_pointer_head_gives_one_logit_per_option() -> None:
+    """Five options in, five logits out."""
+    head = PointerHead(d=32, dp=8)
+    assert head(torch.randn(32), torch.randn(5, 32)).shape == (5,)

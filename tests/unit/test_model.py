@@ -33,3 +33,15 @@ def test_packing_marks_every_part_with_its_delimiter(
     assert enc["decide_idx"] == [12]
     assert enc["opt_idx"] == [[8, 11]]
     assert enc["labels"] == [1]
+
+
+def test_positions_restart_after_the_state(
+    tok: PreTrainedTokenizerFast,  # The tiny tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """Every question starts at the position right after the state, wherever it comes."""
+    enc = encode(tok, record)
+    state_length = enc["seg"].count(0)
+    for k in (1, 2, 3):
+        positions = [p for p, s in zip(enc["pos"], enc["seg"], strict=True) if s == k]
+        assert positions == list(range(state_length, state_length + len(positions)))

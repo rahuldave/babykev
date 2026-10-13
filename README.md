@@ -66,6 +66,10 @@ too. With them, `.venv` takes about 750 MB, and torch is most of it.
 downloads the base model from the Hugging Face Hub, about 1 GB. It answers the five sample requests,
 untrained, and prints each answer beside its label.
 
+`just test` runs every test that needs nothing but our code. The test in `tests/system/` loads the
+real model, as the smoke does, so it needs the Hub or its cache. It has the marker `system`, and only
+`just test -m system` runs it.
+
 Run `just hook` once in each clone. It installs a git hook, which runs `just check` before each commit.
 `just check` runs every check of the project, and if one fails, git makes no commit. One check is a floor.
 The tests must run at least 90% of the code. You can run `just check` yourself at any time.
@@ -81,6 +85,7 @@ The tests must run at least 90% of the code. You can run `just check` yourself a
 | `src/babykev/smoke.py` | The smoke run, which asks the real model the sample requests on this machine |
 | `data/cheese/sample.jsonl` | Five requests about cheese, one on each line. Every question has a `label`, the right answer |
 | `tests/unit/` | The tests of the contract, of the command, of the model, of its mask and of the smoke. One test checks every line of the sample data against the contract. hypothesis tries the rules of the mask on many shapes of request |
+| `tests/system/` | The test of the real model, marked `system`. `just test -m system` runs it |
 | `tests/conftest.py` | The fixtures that every test can ask for: the tiny tokenizer, a tiny model and a record |
 | `tests/tiny.py` | A small tokenizer and backbone, built in memory, in place of the real ones |
 | `docs/` | The docs site. `just docs` builds it into `docs/_site`, with the reference made from the code |

@@ -27,7 +27,7 @@ MILKS = {"cow": None, "goat": None, "sheep": None, "mixed": "More than one kind 
 FIRMNESS = ["Soft", "Semi-soft", "Semi-hard", "Hard"]
 
 
-def cheese_request():
+def cheese_request() -> SystemOneRequest:
     """One request that asks a question of each type."""
     return SystemOneRequest.model_validate(
         {

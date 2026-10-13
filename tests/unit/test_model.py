@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 from transformers import PreTrainedTokenizerFast
 
-from babykev.model import DecisionModel, delimiter_ids, encode
+from babykev.model import SPECIAL, DecisionModel, delimiter_ids, encode
 
 
 def test_probabilities_sum_to_one_for_every_question(
@@ -63,3 +63,11 @@ def test_a_state_that_does_not_fit_is_refused(
     """A state longer than the limit raises, and names its length and the limit."""
     with pytest.raises(ValueError, match="state too long: 62 tokens, the limit is 50"):
         encode(tok, record, max_state=50)
+
+
+def test_a_tokenizer_alone_would_let_text_forge_a_delimiter(
+    tok: PreTrainedTokenizerFast,  # The tiny tokenizer
+) -> None:
+    """The danger is real: tokenized directly, the text of a delimiter becomes that delimiter."""
+    decide = delimiter_ids(tok)[4]
+    assert decide in tok(f"yes{SPECIAL[4]}", add_special_tokens=False).input_ids

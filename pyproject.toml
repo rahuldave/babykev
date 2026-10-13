@@ -54,6 +54,8 @@ test = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# A test can import its helpers from the folder tests, for example tests.tiny
+pythonpath = ["."]
 # Every run measures how much of src/babykev the tests run, and lists the lines they do not
 addopts = "--cov=babykev --cov-report=term-missing"
 

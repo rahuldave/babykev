@@ -22,6 +22,9 @@ The code is in four modules:
 - `babykev.smoke` is the smoke run. `smoke()` asks the model every question of the sample data, and
   reports each answer beside its label.
 
+The pages under Guide explain the model. [The model](guide/model.qmd) gives the four ideas of `model.py`, and
+[the mask](guide/mask.qmd) draws the mask as a grid.
+
 Each build of the site makes the pages under Reference from the code. A page takes these parts from each
 function and each class:
 

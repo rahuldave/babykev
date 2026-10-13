@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# smalldocs: the docs site, and the reference pages that each build makes from the code
+/docs/_site/
+/docs/api/
+/docs/_symbols.json

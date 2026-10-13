@@ -1,8 +1,9 @@
-"""Unit tests for the `babykev` command: `help` prints the help, any other word is refused."""
+"""Unit tests for the `babykev` command: `help`, `smoke help`, and the words that it refuses."""
 
 import pytest
 
 from babykev.cli import HELP, main
+from babykev.smoke import USAGE
 
 
 def run(
@@ -36,3 +37,14 @@ def test_an_unknown_command_is_refused_with_exit_code_2(
     err = capsys.readouterr().err
     assert "no command named 'train'" in err
     assert "babykev help" in err
+
+
+def test_smoke_help_prints_the_usage(
+    monkeypatch: pytest.MonkeyPatch,  # Sets the command line for the test
+    capsys: pytest.CaptureFixture[str],  # Catches the usage
+) -> None:
+    """`babykev smoke help` prints the usage of the smoke, loads no model, and exits with 0."""
+    with pytest.raises(SystemExit) as exit_info:
+        run(monkeypatch, "smoke", "help")
+    assert exit_info.value.code == 0
+    assert capsys.readouterr().out == USAGE

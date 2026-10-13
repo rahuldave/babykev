@@ -53,7 +53,10 @@ class SystemOneRequest(BaseModel):
     questions: dict[str, Question] = Field(min_length=1)
 
 
-def render(v: JSONContent, indent: int = 0) -> str:
+def render(
+    v: JSONContent,  # Text, a number, a list or an object, from a request
+    indent: int = 0,  # How deeply the value is nested. Each level indents by two spaces
+) -> str:  # The text that the model sees
     """Flatten str | object | array into text the model sees. Field names are kept as labels."""
     pad = "  " * indent
     if v is None:
@@ -70,12 +73,17 @@ def render(v: JSONContent, indent: int = 0) -> str:
     )
 
 
-def option_text(name: str, desc: JSONContent) -> str:
+def option_text(
+    name: str,  # The name of the option
+    desc: JSONContent,  # Its description, or None or "" when the name says enough
+) -> str:  # The name alone, or the name and the description
     """Write an option as its name, followed by its description when it has one."""
     return name if desc is None or desc == "" else f"{name}: {render(desc)}"
 
 
-def to_record(req: SystemOneRequest) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def to_record(
+    req: SystemOneRequest,  # A request that the contract has accepted
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:  # The record, and the metadata of each question
     """-> internal record for encode(), plus per-question metadata to map probabilities back."""
     qs, meta = [], []
     for qid, q in req.questions.items():
@@ -100,13 +108,17 @@ def to_record(req: SystemOneRequest) -> tuple[dict[str, Any], list[dict[str, Any
     return {"state": render(req.state), "questions": qs}, meta
 
 
-def choice_confidence(p: list[float]) -> float:
+def choice_confidence(
+    p: list[float],  # The probability of each option
+) -> float:  # From 0 for a guess to 1 when one option has all the probability
     """Measure how far the most likely option stands above a guess: 1 if certain, 0 for a guess."""
     k = len(p)
     return 1.0 if k == 1 else (max(p) - 1 / k) / (1 - 1 / k)
 
 
-def score_confidence(p: list[float]) -> float:
+def score_confidence(
+    p: list[float],  # The probability of each level, the lowest level first
+) -> float:  # From 0 for a guess to 1 when one level has all the probability
     """How closely the probabilities sit around the most likely level: 1 if certain, 0 for a guess.
 
     `spread` is the expected distance from the most likely level. `guess` is the spread of a guess,
@@ -121,13 +133,18 @@ def score_confidence(p: list[float]) -> float:
     return max(0.0, 1.0 - spread / guess)
 
 
-def round_prob(x: float) -> float:
+def round_prob(
+    x: float,  # A probability, or a number made from probabilities
+) -> float:  # The same number, to four decimals
     """Round a number for output. Four decimals keep the sum of a distribution within 0.02 of 1,
     even with MAX_OPTIONS options. Two decimals did not: 77 equal options summed to 0.77."""
     return round(float(x), 4)
 
 
-def to_answers(probs: list[list[float]], meta: list[dict]) -> dict[str, Any]:
+def to_answers(
+    probs: list[list[float]],  # For each question, the probability of each of its options
+    meta: list[dict],  # The metadata of the questions, as to_record returns it
+) -> dict[str, Any]:  # The answer to each question, under its name
     """Turn the probabilities of the model into an answer of the type of each question."""
     out = {}
     for p, m in zip(probs, meta, strict=True):

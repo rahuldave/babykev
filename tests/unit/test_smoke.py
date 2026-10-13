@@ -1,6 +1,9 @@
 """Tests of the smoke run, without the real model."""
 
-from babykev.smoke import verdict
+from transformers import PreTrainedTokenizerFast
+
+from babykev.model import DecisionModel
+from babykev.smoke import read_lines, smoke, verdict
 
 
 def test_verdict_agrees_when_the_answer_is_the_label() -> None:
@@ -24,3 +27,16 @@ def test_verdict_reads_a_score_answer_as_its_most_likely_level() -> None:
         "level 1",
         True,
     )
+
+
+def test_smoke_reports_on_every_question_of_the_sample(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+) -> None:
+    """Five requests of three questions: fifteen verdicts and a closing count."""
+    lines = read_lines()
+    report = list(smoke(model, tok, lines))
+    verdicts = [text for text in report if text.startswith(("  ok", "  --"))]
+    assert len(verdicts) == sum(len(line["questions"]) for line in lines) == 15
+    right = sum(text.startswith("  ok") for text in verdicts)
+    assert f"\n{right} of 15 right" in report[-2]

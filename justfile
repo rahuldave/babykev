@@ -76,8 +76,11 @@ check *args:
     just docs check
     just lint-config
 
-# The reference of the code, by smalldocs. Words go to smalldocs api: just docs check, just docs module api
+# The docs, by smalldocs. Alone, the site in docs/_site. Words go to smalldocs api: just docs check
 [group('docs')]
 [no-exit-message]
 docs *args:
-    @{{ if args == "help" { "just help docs" } else { 'uv run smalldocs api "$@" --dir docs' } }}
+    #!/usr/bin/env sh
+    if [ "$*" = help ]; then just help docs; exit 0; fi
+    if [ "$#" -eq 0 ]; then exec uv run smalldocs render docs; fi
+    exec uv run smalldocs api "$@" --dir docs

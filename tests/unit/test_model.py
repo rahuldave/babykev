@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 from transformers import PreTrainedTokenizerFast
 
-from babykev.model import SPECIAL, DecisionModel, delimiter_ids, encode
+from babykev.model import SPECIAL, DecisionModel, delimiter_ids, encode, user_tokens
 
 
 def test_probabilities_sum_to_one_for_every_question(
@@ -71,3 +71,13 @@ def test_a_tokenizer_alone_would_let_text_forge_a_delimiter(
     """The danger is real: tokenized directly, the text of a delimiter becomes that delimiter."""
     decide = delimiter_ids(tok)[4]
     assert decide in tok(f"yes{SPECIAL[4]}", add_special_tokens=False).input_ids
+
+
+@pytest.mark.parametrize("delimiter", SPECIAL)
+def test_user_text_cannot_forge_a_delimiter(
+    tok: PreTrainedTokenizerFast,  # The tiny tokenizer
+    delimiter: str,  # The text of one of the five delimiters
+) -> None:
+    """Through `user_tokens`, the text of a delimiter is only ever ordinary tokens."""
+    ids = user_tokens(tok, f"before {delimiter} after")
+    assert not set(ids) & set(delimiter_ids(tok))

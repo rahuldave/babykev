@@ -91,3 +91,11 @@ docs *args:
     if [ "$*" = help ]; then just help docs; exit 0; fi
     if [ "$#" -eq 0 ]; then exec uv run smalldocs render docs; fi
     exec uv run smalldocs api "$@" --dir docs
+
+# Run the smoke on this machine: the real model answers the sample requests, untrained
+[group('model')]
+[no-exit-message]
+smoke *args:
+    #!/usr/bin/env sh
+    if [ "$*" = help ]; then just help smoke; exit 0; fi
+    exec uv run {{ program }} smoke "$@"

@@ -175,7 +175,9 @@ class PointerHead(nn.Module):
         self.q, self.k = nn.Linear(d, dp), nn.Linear(d, dp)
         self.scale = 1 / math.sqrt(dp)
 
-    def forward(
+    # nn.Module declares forward as an attribute that may hold any function. A method with two
+    # tensors accepts fewer calls, so ty refuses it. torch only calls forward, and never sets it
+    def forward(  # ty: ignore[invalid-mutable-override]
         self,
         h_decide: torch.Tensor,  # The hidden state at the decide token, shape [d]
         h_opts: torch.Tensor,  # The hidden states at the K options' closing tokens, shape [K, d]

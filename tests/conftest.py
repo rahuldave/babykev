@@ -4,6 +4,8 @@ What the tests of the model check is exact, and holds for any weights. So the fi
 trained model, no download and no GPU.
 """
 
+from typing import Any
+
 import pytest
 from transformers import PreTrainedTokenizerFast
 
@@ -23,3 +25,16 @@ def model(
 ) -> DecisionModel:  # A decision model on the tiny backbone, with no adapter, ready to answer
     """Provide a fresh tiny model for each test, on the CPU."""
     return DecisionModel("tiny", "cpu", backbone=tiny_backbone(len(tok))).eval()
+
+
+@pytest.fixture
+def record() -> dict[str, Any]:  # A record with a state and three questions
+    """Provide one record, as `to_record` would return it."""
+    return {
+        "state": "Roquefort. A blue cheese from France, made from sheep's milk.",
+        "questions": [
+            {"instr": "Is this a blue cheese?", "options": ["no", "yes"], "label": 1},
+            {"instr": "Which milk?", "options": ["cow", "goat", "sheep"], "label": 2},
+            {"instr": "How firm?", "options": ["Soft", "Semi-soft", "Hard"], "label": 1},
+        ],
+    }

@@ -158,3 +158,15 @@ def test_a_question_cannot_see_its_sibling(
     after = model.probs(encode(tok, changed))
     assert torch.equal(before[0], after[0])
     assert torch.equal(before[2], after[2])
+
+
+def test_packed_questions_answer_as_they_would_alone(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """One pass over three questions gives what three passes, of one question each, give."""
+    packed = model.probs(encode(tok, record))
+    for together, question in zip(packed, record["questions"], strict=True):
+        alone = model.probs(encode(tok, {"state": record["state"], "questions": [question]}))[0]
+        assert torch.allclose(together, alone, atol=1e-6)

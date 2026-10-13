@@ -97,6 +97,19 @@ Both images mount the cache of the Hugging Face Hub of this machine at `/hf`, so
 downloaded once. An image holds the packages of the lockfile at the time of its build, so build it again
 after a change to `uv.lock`.
 
+## On GitHub
+
+Two workflows in `.github/workflows/` run on the machines of GitHub. `check.yaml` runs `just check`
+after every push to a branch and on every pull request. `docs.yaml` builds the docs site after every
+push to `main`, and GitHub Pages publishes it.
+
+A fork runs no workflow until its owner allows it. Make these two settings on the website of GitHub:
+
+1. Open the tab **Actions** of the fork, and turn the workflows on.
+2. Open **Settings**, then **Pages**. Under **Source**, choose **GitHub Actions**.
+
+The site is then at `https://OWNER.github.io/babykev/`, with the name of the account in place of OWNER.
+
 ## What is here
 
 | Path | What it is |
@@ -119,6 +132,7 @@ after a change to `uv.lock`.
 | `.python-version` | The version of Python that the project uses |
 | `.gitignore` | The files that git does not track, for example `.venv` |
 | `.pre-commit-config.yaml` | The hooks that git runs before each commit, once `just hook` installs them. The last runs `just check` |
+| `.github/workflows/` | The two workflows of GitHub: the gate after every push, and the docs site on GitHub Pages |
 | `.yamllint` | The settings of yamllint, which `just lint-config` runs on every YAML file |
 
 ## How the history is organised

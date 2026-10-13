@@ -42,7 +42,7 @@ fmt *args:
 lint *args:
     @{{ if args == "help" { "just help lint" } else { 'uv run ruff check "$@"' } }}
 
-# Check the config files: pyproject.toml against the standard
+# Check the config files: pyproject.toml against the standard, and the lockfile against it
 [group('quality')]
 [no-exit-message]
 lint-config *args:
@@ -50,6 +50,7 @@ lint-config *args:
     set -e
     if [ "$*" = help ]; then just help lint-config; exit 0; fi
     uv run validate-pyproject pyproject.toml
+    uv lock --check
 
 # Run the tests. Extra words go to pytest: just test -k render
 [group('quality')]

@@ -128,3 +128,19 @@ def test_with_an_adapter_only_the_adapter_and_the_head_train(
     assert {id(p) for p in model.trainable_parameters()} == {
         id(p) for name, p in model.named_parameters() if name in with_gradient
     }
+
+
+def test_records_of_different_lengths_answer_in_one_pass_as_alone(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """Padded to the longest, each record gets the logits that it gets in a pass of its own."""
+    short = {"state": "Brie.", "questions": record["questions"][:1]}
+    encs = [encode(tok, record), encode(tok, short)]
+    with torch.no_grad():
+        together = model.forward_batch(encs)
+        alone = [model(enc) for enc in encs]
+    for batch, single in zip(together, alone, strict=True):
+        for a, b in zip(batch, single, strict=True):
+            assert torch.allclose(a, b, atol=1e-5)

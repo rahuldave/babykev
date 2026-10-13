@@ -9,6 +9,7 @@ authors = [{ name = "Rahul Dave" }]
 requires-python = ">=3.13"
 dependencies = [
     "pydantic>=2.14.1",
+    "torch",
 ]
 
 [project.scripts]
@@ -28,6 +29,9 @@ default-groups = "all"
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [dependency-groups]
 docs = [

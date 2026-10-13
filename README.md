@@ -58,6 +58,10 @@ Then run `just test`. `just` lists the tasks, `just help VERB` explains one, and
 help of the program itself. A recipe gives its extra words to the tool behind it. For example,
 `just test -k help` runs only the tests with `help` in their name.
 
+Run `just hook` once in each clone. It installs a git hook, which runs `just check` before each commit.
+`just check` runs every check of the project, and if one fails, git makes no commit. You can run `just check`
+yourself at any time.
+
 ## What is here
 
 | Path | What it is |
@@ -72,6 +76,7 @@ help of the program itself. A recipe gives its extra words to the tool behind it
 | `LICENSE`, `NOTICE` | The licence, and the credit to kev |
 | `.python-version` | The version of Python that the project uses |
 | `.gitignore` | The files that git does not track, for example `.venv` |
+| `.pre-commit-config.yaml` | The hooks that git runs before each commit, once `just hook` installs them. The last runs `just check` |
 
 ## How the history is organised
 

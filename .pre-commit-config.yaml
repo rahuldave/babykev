@@ -4,6 +4,11 @@
 # The project's own checks are one hook that runs `just check`, so the hook and the terminal run the
 # same thing.
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1000]
   - repo: local
     hooks:
       - id: check

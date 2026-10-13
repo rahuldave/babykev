@@ -45,7 +45,7 @@ fmt *args:
 lint *args:
     @{{ if args == "help" { "just help lint" } else { 'uv run ruff check "$@"' } }}
 
-# Check the config files: pyproject.toml against the standard, the lockfile against it, and this justfile
+# Check the config files: pyproject.toml, the lockfile, this justfile, and every YAML file
 [group('quality')]
 [no-exit-message]
 lint-config *args:
@@ -55,6 +55,7 @@ lint-config *args:
     uv run validate-pyproject pyproject.toml
     uv lock --check
     just --fmt --check --unstable
+    uv run yamllint --strict .
 
 # Run the tests. Extra words go to pytest: just test -k render
 [group('quality')]

@@ -14,3 +14,13 @@ def test_verdict_reads_a_noul_answer_as_yes_from_one_half() -> None:
     """A probability of yes at or above 0.5 is a yes."""
     said, label, agree = verdict({"type": "noul", "label": False}, {"type": "noul", "noul": 0.5})
     assert (said, label, agree) == ("yes (0.50)", "no", False)
+
+
+def test_verdict_reads_a_score_answer_as_its_most_likely_level() -> None:
+    """A score is judged by the level with the highest probability."""
+    given = {"type": "score", "score": 1.1, "probabilities": {"0": 0.2, "1": 0.5, "2": 0.3}}
+    assert verdict({"type": "score", "label": 1}, given) == (
+        "level 1 (score 1.10)",
+        "level 1",
+        True,
+    )

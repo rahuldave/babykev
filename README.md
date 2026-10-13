@@ -62,6 +62,10 @@ The model needs four packages, torch, transformers, peft and safetensors. torch 
 from the index of PyTorch that `pyproject.toml` names. On a Mac, the same build runs on the GPU of Apple
 too. With them, `.venv` takes about 750 MB, and torch is most of it.
 
+`just smoke` runs the model on this machine, on the best device that it finds. The first time, it
+downloads the base model from the Hugging Face Hub, about 1 GB. It answers the five sample requests,
+untrained, and prints each answer beside its label.
+
 Run `just hook` once in each clone. It installs a git hook, which runs `just check` before each commit.
 `just check` runs every check of the project, and if one fails, git makes no commit. You can run `just check`
 yourself at any time.
@@ -74,6 +78,7 @@ yourself at any time.
 | `src/babykev/api.py` | The contract: the request and its three types of question as pydantic models, the text and options the model reads, and the answers made from its probabilities |
 | `src/babykev/cli.py` | The command `babykev` |
 | `src/babykev/model.py` | The model, a language model with a head that points at the options |
+| `src/babykev/smoke.py` | The smoke run, which asks the real model the sample requests on this machine |
 | `data/cheese/sample.jsonl` | Five requests about cheese, one on each line. Every question has a `label`, the right answer |
 | `tests/unit/` | The unit tests of the contract and of the command. One test checks every line of the sample data against the contract |
 | `docs/` | The docs site. `just docs` builds it into `docs/_site`, with the reference made from the code |

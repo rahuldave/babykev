@@ -1,0 +1,5 @@
+# The settings of smalldocs. `api` is the reference, made from the code of the package
+api:
+  packages: [babykev]
+  source: https://github.com/rahuldave/babykev/blob/tutorial  # each entry links to its line here
+  check: ["tests/**/*.py"]  # the tests are held to the same rule as the package

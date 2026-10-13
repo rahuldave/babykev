@@ -1,0 +1,21 @@
+# The gate, on GitHub: just check, after every push to a branch and on every pull request. The hook
+# runs the same recipe before each commit, on the machine that makes it.
+name: Check
+
+on:
+  push:
+    branches: ["**"]  # every branch, and no tag
+  pull_request:
+
+permissions:
+  contents: read  # the job reads the code, and changes nothing on GitHub
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: extractions/setup-just@v4
+      - run: just setup
+      - run: just check

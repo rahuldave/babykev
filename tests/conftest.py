@@ -7,10 +7,17 @@ trained model, no download and no GPU.
 from typing import Any
 
 import pytest
+from hypothesis import settings
 from transformers import PreTrainedTokenizerFast
 
 from babykev.model import DecisionModel
 from tests.tiny import tiny_backbone, tiny_tokenizer
+
+# hypothesis gives each example of a test 200 ms. The first example that runs torch can take
+# longer on a slow or busy machine, such as a container, and the test then fails by chance. The
+# tests that hypothesis feeds check a rule, and not a speed, so no example has a deadline
+settings.register_profile("babykev", deadline=None)
+settings.load_profile("babykev")
 
 
 @pytest.fixture(scope="session")

@@ -4,3 +4,4 @@ ignore-from-file: .gitignore  # the files that git ignores, such as everything i
 rules:
   document-start: disable  # a file need not start with a line of three dashes
   line-length: {max: 100}  # as long as a line of the Python code
+  truthy: {check-keys: false}  # a key may be a word such as on, which YAML 1.1 reads as true

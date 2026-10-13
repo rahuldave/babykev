@@ -170,3 +170,15 @@ def test_packed_questions_answer_as_they_would_alone(
     for together, question in zip(packed, record["questions"], strict=True):
         alone = model.probs(encode(tok, {"state": record["state"], "questions": [question]}))[0]
         assert torch.allclose(together, alone, atol=1e-6)
+
+
+def test_the_order_of_questions_does_not_matter(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """Positions restart after the state, so a question gets the same answer first or last."""
+    forward = model.probs(encode(tok, record))
+    backward = model.probs(encode(tok, {**record, "questions": record["questions"][::-1]}))
+    for a, b in zip(forward, backward[::-1], strict=True):
+        assert torch.allclose(a, b, atol=1e-6)

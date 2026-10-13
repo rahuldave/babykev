@@ -78,7 +78,7 @@ fmt *args:
 lint *args:
     @{{ if args == "help" { "just help lint" } else { 'uv run ruff check "$@"' } }}
 
-# Check the config files: pyproject.toml, the lockfile, this justfile, every YAML file, and the Dockerfile
+# Check the config files: pyproject.toml, the lockfile, this justfile, every YAML file, the Dockerfile and the workflows
 [group('quality')]
 [no-exit-message]
 lint-config *args:
@@ -90,6 +90,7 @@ lint-config *args:
     just --fmt --check --unstable
     uv run yamllint --strict .
     uv run hadolint Dockerfile
+    uv run actionlint
 
 # Check the types, by reading the code and not running it. Extra words go to ty: just types src
 [group('quality')]

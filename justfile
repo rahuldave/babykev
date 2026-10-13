@@ -74,3 +74,9 @@ check *args:
     just lint
     just test -q
     just lint-config
+
+# The reference of the code, by smalldocs. Words go to smalldocs api: just docs check, just docs module api
+[group('docs')]
+[no-exit-message]
+docs *args:
+    @{{ if args == "help" { "just help docs" } else { 'uv run smalldocs api "$@" --dir docs' } }}

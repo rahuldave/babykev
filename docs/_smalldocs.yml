@@ -8,6 +8,10 @@ website:
   sidebar:
     contents:
       - index.qmd
+      - section: Guide
+        contents:  # named one by one, so that the model comes before its mask
+          - guide/model.qmd
+          - guide/mask.qmd
       - section: Reference
         contents: api/*  # the reference pages, which each build makes from the code
 

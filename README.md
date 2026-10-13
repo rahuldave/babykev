@@ -67,8 +67,8 @@ downloads the base model from the Hugging Face Hub, about 1 GB. It answers the f
 untrained, and prints each answer beside its label.
 
 Run `just hook` once in each clone. It installs a git hook, which runs `just check` before each commit.
-`just check` runs every check of the project, and if one fails, git makes no commit. You can run `just check`
-yourself at any time.
+`just check` runs every check of the project, and if one fails, git makes no commit. One check is a floor.
+The tests must run at least 90% of the code. You can run `just check` yourself at any time.
 
 ## What is here
 

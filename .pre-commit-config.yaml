@@ -12,6 +12,11 @@ repos:
       - id: check-merge-conflict
   - repo: local
     hooks:
+      - id: no-env-file
+        name: no .env file
+        entry: A .env file holds the settings and secrets of one machine. It is never committed
+        language: fail
+        files: (^|/)\.env$
       - id: check
         name: just check
         entry: just check

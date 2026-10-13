@@ -8,8 +8,14 @@ answers.
 """
 
 import json
+import time
 from pathlib import Path
 from typing import Any
+
+from transformers import PreTrainedTokenizerBase
+
+from babykev.api import SystemOneRequest, to_answers, to_record
+from babykev.model import DecisionModel, encode
 
 SAMPLE = Path("data/cheese/sample.jsonl")
 
@@ -20,3 +26,16 @@ def read_lines(
     """Read labelled requests from a JSONL file."""
     with path.open(encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
+
+
+def answer(
+    model: DecisionModel,  # The model that answers
+    tok: PreTrainedTokenizerBase,  # Its tokenizer
+    line: dict[str, Any],  # One labelled request
+) -> tuple[dict[str, Any], int, float]:  # The answers, the tokens packed, the seconds taken
+    """Answer one request: the contract, then packing, then one forward pass, then answers."""
+    record, meta = to_record(SystemOneRequest.model_validate(line))
+    enc = encode(tok, record)
+    started = time.perf_counter()
+    probs = [p.tolist() for p in model.probs(enc)]
+    return to_answers(probs, meta), len(enc["ids"]), time.perf_counter() - started

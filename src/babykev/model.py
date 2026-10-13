@@ -256,7 +256,8 @@ class DecisionModel(nn.Module):
             for b, enc in enumerate(encs)
         ]
 
-    def forward(
+    # As in PointerHead, nn.Module declares forward as an attribute, and torch never sets it
+    def forward(  # ty: ignore[invalid-mutable-override]
         self,
         enc: Encoded,  # A packed record
     ) -> list[torch.Tensor]:  # For each question, one logit per option

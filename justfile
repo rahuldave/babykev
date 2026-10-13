@@ -63,7 +63,7 @@ lint-config *args:
 test *args:
     @{{ if args == "help" { "just help test" } else { 'uv run pytest "$@"' } }}
 
-# Run the checks one after another, and stop at the first that fails: the format, the linter, the tests, the config files
+# Run the checks one after another, and stop at the first that fails: the format, the linter, the tests, the docs, the config files
 [group('quality')]
 [no-exit-message]
 check *args:
@@ -73,6 +73,7 @@ check *args:
     just fmt --check
     just lint
     just test -q
+    just docs check
     just lint-config
 
 # The reference of the code, by smalldocs. Words go to smalldocs api: just docs check, just docs module api

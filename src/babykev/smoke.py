@@ -8,17 +8,24 @@ answers.
 """
 
 import json
+import sys
 import time
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
+import torch
 from transformers import PreTrainedTokenizerBase
 
 from babykev.api import SystemOneRequest, render, to_answers, to_record
-from babykev.model import DecisionModel, encode
+from babykev.model import DecisionModel, encode, load_tokenizer, pick_device
 
 SAMPLE = Path("data/cheese/sample.jsonl")
+BASE = "Qwen/Qwen2.5-0.5B"
+LORA_RANK = 16
+USAGE = """\
+usage: babykev smoke    load the base model on this machine; answer the sample requests, untrained
+"""
 
 
 def read_lines(
@@ -83,3 +90,30 @@ def smoke(
     typical = sorted(seconds)[len(seconds) // 2] * 1000
     yield f"\n{right} of {total} right, {typical:.0f} ms a request."
     yield "Nothing is trained yet: these are guesses."
+
+
+def main(
+    words: list[str],  # The words after `babykev smoke`: none to run, `help` for the usage
+) -> int:  # The exit code: 0, or 2 for words that are no command
+    """Load the real model on the best device there is and run the smoke on the sample data."""
+    if words in (["help"], ["--help"], ["-h"]):
+        print(USAGE, end="")
+        return 0
+    if words:
+        print(USAGE, end="", file=sys.stderr)
+        return 2
+    device = pick_device()
+    where = torch.cuda.get_device_name(0) if device == "cuda" else device
+    print(f"babykev smoke: {BASE} on {where}", flush=True)
+    started = time.perf_counter()
+    torch.manual_seed(0)
+    tok = load_tokenizer(BASE)
+    model = DecisionModel(BASE, device, lora=LORA_RANK).eval()
+    everything = sum(p.numel() for p in model.parameters())
+    trainable = sum(p.numel() for p in model.trainable_parameters())
+    loaded = time.perf_counter() - started
+    sizes = f"{everything / 1e6:.0f}M parameters, {trainable / 1e6:.1f}M of them trainable"
+    print(f"loaded in {loaded:.1f} s: {sizes}", flush=True)
+    for text in smoke(model, tok, read_lines()):
+        print(text, flush=True)
+    return 0

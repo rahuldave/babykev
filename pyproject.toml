@@ -41,6 +41,7 @@ docs = [
     "smalldocs>=0.1.5",
 ]
 lint = [
+    "hadolint-bin>=2.15.1",
     "pre-commit>=4.7.0",
     "ruff>=0.17.1",
     "ty>=0.0.88",

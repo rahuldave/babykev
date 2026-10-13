@@ -48,3 +48,14 @@ def test_smoke_help_prints_the_usage(
         run(monkeypatch, "smoke", "help")
     assert exit_info.value.code == 0
     assert capsys.readouterr().out == USAGE
+
+
+def test_smoke_refuses_a_word_it_does_not_know(
+    monkeypatch: pytest.MonkeyPatch,  # Sets the command line for the test
+    capsys: pytest.CaptureFixture[str],  # Catches the usage, on the error stream
+) -> None:
+    """A word after `babykev smoke` that is not help gets the usage and exit code 2."""
+    with pytest.raises(SystemExit) as exit_info:
+        run(monkeypatch, "smoke", "local")
+    assert exit_info.value.code == 2
+    assert capsys.readouterr().err == USAGE

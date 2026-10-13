@@ -1,4 +1,20 @@
-# The settings of smalldocs. `api` is the reference, made from the code of the package
+# The settings of smalldocs. `just docs` builds the site into docs/_site
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "babykev"
+  sidebar:
+    contents:
+      - index.qmd
+      - section: Reference
+        contents: api/*  # the reference pages, which each build makes from the code
+
+theme: cosmo
+toc: true
+
+# `api` is the reference, made from the code of the package. A name in backticks links to its entry
 api:
   packages: [babykev]
   source: https://github.com/rahuldave/babykev/blob/tutorial  # each entry links to its line here

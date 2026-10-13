@@ -1,0 +1,16 @@
+# What docker build never copies into an image: the history of git, the environment and the
+# settings of this machine, and what a run or a tool writes. An image makes its own environment.
+.git
+.venv
+.env
+.env.*
+**/__pycache__
+.ruff_cache
+.pytest_cache
+.hypothesis
+.coverage
+.coverage.*
+docs/_site
+docs/api
+docs/_symbols.json
+.DS_Store

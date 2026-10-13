@@ -57,8 +57,9 @@ test = [
 testpaths = ["tests"]
 # A test can import its helpers from the folder tests, for example tests.tiny
 pythonpath = ["."]
-# Every run measures how much of src/babykev the tests run, and lists the lines they do not
-addopts = "--cov=babykev --cov-report=term-missing"
+# Every run measures how much of src/babykev the tests run, and lists the lines they do not. A run
+# leaves out the tests marked system, unless it asks for them: just test -m system
+addopts = "--cov=babykev --cov-report=term-missing -m 'not system'"
 # A marker is a name that a test can carry, and -m chooses the tests by it
 markers = ["system: needs the network, the real model or a device"]
 

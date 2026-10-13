@@ -15,6 +15,7 @@ from babykev.model import (
     pick_device,
     user_tokens,
 )
+from tests.tiny import tiny_backbone
 
 
 def test_probabilities_sum_to_one_for_every_question(
@@ -106,3 +107,24 @@ def test_pick_device_takes_an_override() -> None:
 def test_pick_device_finds_something_to_run_on() -> None:
     """With no override, the choice is one of the three kinds of device."""
     assert pick_device() in {"cuda", "mps", "cpu"}
+
+
+def test_with_an_adapter_only_the_adapter_and_the_head_train(
+    tok: PreTrainedTokenizerFast,  # The tiny tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """The backbone is frozen: gradients reach the adapter and the pointer head, nothing else."""
+    model = DecisionModel("tiny", "cpu", lora=4, backbone=tiny_backbone(len(tok)))
+    enc = encode(tok, record)
+    labels = torch.tensor(enc["labels"])
+    losses = [
+        torch.nn.functional.cross_entropy(z[None], y[None])
+        for z, y in zip(model(enc), labels, strict=True)
+    ]
+    torch.stack(losses).sum().backward()
+    with_gradient = {name for name, p in model.named_parameters() if p.grad is not None}
+    assert with_gradient
+    assert all("lora_" in name or name.startswith("head.") for name in with_gradient)
+    assert {id(p) for p in model.trainable_parameters()} == {
+        id(p) for name, p in model.named_parameters() if name in with_gradient
+    }

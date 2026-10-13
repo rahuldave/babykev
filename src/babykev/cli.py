@@ -1,5 +1,6 @@
 """The babykev command. `babykev help` says what it can do; every command arrives here."""
 
+import os
 import sys
 
 HELP = """\

@@ -80,7 +80,7 @@ yourself at any time.
 | `src/babykev/model.py` | The model, a language model with a head that points at the options |
 | `src/babykev/smoke.py` | The smoke run, which asks the real model the sample requests on this machine |
 | `data/cheese/sample.jsonl` | Five requests about cheese, one on each line. Every question has a `label`, the right answer |
-| `tests/unit/` | The tests of the contract, of the command and of the model. One test checks every line of the sample data against the contract |
+| `tests/unit/` | The tests of the contract, of the command, of the model and of the smoke. One test checks every line of the sample data against the contract |
 | `tests/conftest.py` | The fixtures that every test can ask for: the tiny tokenizer, a tiny model and a record |
 | `tests/tiny.py` | A small tokenizer and backbone, built in memory, in place of the real ones |
 | `docs/` | The docs site. `just docs` builds it into `docs/_site`, with the reference made from the code |

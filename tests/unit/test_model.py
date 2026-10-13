@@ -144,3 +144,17 @@ def test_records_of_different_lengths_answer_in_one_pass_as_alone(
     for batch, single in zip(together, alone, strict=True):
         for a, b in zip(batch, single, strict=True):
             assert torch.allclose(a, b, atol=1e-5)
+
+
+def test_a_question_cannot_see_its_sibling(
+    model: DecisionModel,  # The tiny model
+    tok: PreTrainedTokenizerFast,  # Its tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """Rewriting question 2 leaves the answers to questions 1 and 3 exactly as they were."""
+    before = model.probs(encode(tok, record))
+    changed = {**record, "questions": list(record["questions"])}
+    changed["questions"][1] = {"instr": "Where from?", "options": ["Spain", "Italy"], "label": 0}
+    after = model.probs(encode(tok, changed))
+    assert torch.equal(before[0], after[0])
+    assert torch.equal(before[2], after[2])

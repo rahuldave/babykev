@@ -6,7 +6,15 @@ import pytest
 import torch
 from transformers import PreTrainedTokenizerFast
 
-from babykev.model import SPECIAL, DecisionModel, PointerHead, delimiter_ids, encode, user_tokens
+from babykev.model import (
+    SPECIAL,
+    DecisionModel,
+    PointerHead,
+    delimiter_ids,
+    encode,
+    pick_device,
+    user_tokens,
+)
 
 
 def test_probabilities_sum_to_one_for_every_question(
@@ -88,3 +96,8 @@ def test_pointer_head_gives_one_logit_per_option() -> None:
     """Five options in, five logits out."""
     head = PointerHead(d=32, dp=8)
     assert head(torch.randn(32), torch.randn(5, 32)).shape == (5,)
+
+
+def test_pick_device_takes_an_override() -> None:
+    """A device asked for by name is used, whatever the machine has."""
+    assert pick_device("cpu") == "cpu"

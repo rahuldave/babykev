@@ -39,3 +39,23 @@ def answer(
     started = time.perf_counter()
     probs = [p.tolist() for p in model.probs(enc)]
     return to_answers(probs, meta), len(enc["ids"]), time.perf_counter() - started
+
+
+def verdict(
+    question: dict[str, Any],  # One question of a labelled request, with its `label`
+    given: dict[str, Any],  # The model's answer to it
+) -> tuple[str, str, bool]:  # What the model said, what the label says, and whether they agree
+    """Put one answer beside its label."""
+    label = question["label"]
+    if given["type"] == "noul":
+        said = given["noul"] >= 0.5
+        return (
+            f"{'yes' if said else 'no'} ({given['noul']:.2f})",
+            "yes" if label else "no",
+            said == label,
+        )
+    if given["type"] == "choice":
+        chosen = given["choice"]
+        return f"{chosen} ({given['probabilities'][chosen]:.2f})", str(label), chosen == label
+    level = max(given["probabilities"], key=lambda i: given["probabilities"][i])
+    return f"level {level} (score {given['score']:.2f})", f"level {label}", int(level) == label

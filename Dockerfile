@@ -41,6 +41,10 @@ CMD ["help"]
 # The dev image: the whole project with every group, and the tools to work on it
 FROM python:3.13-slim-trixie AS dev
 ARG JUST=1.50.0
+# hadolint asks for the version of each package of Debian (DL3008). Debian replaces a package at
+# each fix of its security, and the old version leaves the archive. So a pinned version stops
+# building within weeks. The tag of the base image is the pin
+# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*

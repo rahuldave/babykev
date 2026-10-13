@@ -59,6 +59,8 @@ testpaths = ["tests"]
 pythonpath = ["."]
 # Every run measures how much of src/babykev the tests run, and lists the lines they do not
 addopts = "--cov=babykev --cov-report=term-missing"
+# A marker is a name that a test can carry, and -m chooses the tests by it
+markers = ["system: needs the network, the real model or a device"]
 
 [tool.ruff]
 # The formatter and the linter share this setting. ruff's own default is 88, and this project uses 100

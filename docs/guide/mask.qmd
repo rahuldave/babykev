@@ -1,0 +1,52 @@
+---
+title: The mask
+---
+
+The mask says which token of a packed request may attend to which. This page draws it as a grid. A row is a
+token, and a column is a token that it might attend to. `#` is allowed, and `.` is blocked.
+
+## A small request
+
+The request has a state of two tokens and two questions of two tokens each. The segments are
+`[0, 0, 1, 1, 2, 2]`.
+
+```
+     s s 1 1 2 2
+s    # . . . . .
+s    # # . . . .
+1    # # # . . .
+1    # # # # . .
+2    # # . . # .
+2    # # . . # #
+```
+
+Every token sees the state and the tokens of its own question that come before it. Rows 5 and 6, the tokens of
+question 2, do not see columns 3 and 4, the tokens of question 1.
+
+The picture is the test `test_mask_of_a_small_request`, in `tests/unit/test_mask.py`. So `just test` checks
+that the grid on the page is the grid that `branch_mask` builds.
+
+## A plain causal mask
+
+A plain causal mask lets each token see every token before it. For the same request, it gives this grid.
+
+```
+     s s 1 1 2 2
+s    # . . . . .
+s    # # . . . .
+1    # # # . . .
+1    # # # # . .
+2    # # # # # .
+2    # # # # # #
+```
+
+Rows 5 and 6 differ. Question 2 sees question 1, so the answer to question 2 depends on question 1.
+
+## The rule, for any request
+
+One picture checks one size. The tests in `test_mask.py` state the rule, and hypothesis tries many sizes of
+request:
+
+- no token sees a token after it
+- no token of a question sees a token of another question
+- the mask allows exactly what the rule allows

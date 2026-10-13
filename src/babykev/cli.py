@@ -8,14 +8,20 @@ babykev: a small decision model. Context, typed questions, and a probability for
 usage: babykev COMMAND [FLAGS]
        babykev help
 
-There are no commands yet.
+commands:
+  smoke   load the base model on this machine and answer the five sample requests, untrained
 """
 
 
 def main() -> None:
-    """Print the help, or refuse a command that does not exist yet."""
+    """Run the command named by the first word, print the help, or refuse any other word."""
     words = sys.argv[1:]
-    if words and words[0] not in ("help", "--help", "-h"):
-        print(f"babykev: no command named {words[0]!r}. Run `babykev help`.", file=sys.stderr)
-        raise SystemExit(2)
-    print(HELP, end="")
+    if not words or words[0] in ("help", "--help", "-h"):
+        print(HELP, end="")
+        return
+    if words[0] == "smoke":
+        from babykev import smoke  # imports torch, so only when it is asked for
+
+        raise SystemExit(smoke.main(words[1:]))
+    print(f"babykev: no command named {words[0]!r}. Run `babykev help`.", file=sys.stderr)
+    raise SystemExit(2)

@@ -25,6 +25,11 @@ help *verb:
 setup *args:
     @{{ if args == "help" { "just help setup" } else { "uv sync --locked" } }}
 
+# Install the git hook, which runs just check before each commit. Once in each clone: just setup never touches git
+[group('setup')]
+hook *args:
+    @{{ if args == "help" { "just help hook" } else { "uv run pre-commit install" } }}
+
 # Write the Python of the project in one style. Extra words go to ruff: just fmt --check
 [group('quality')]
 [no-exit-message]

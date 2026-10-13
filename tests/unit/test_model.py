@@ -45,3 +45,12 @@ def test_positions_restart_after_the_state(
     for k in (1, 2, 3):
         positions = [p for p, s in zip(enc["pos"], enc["seg"], strict=True) if s == k]
         assert positions == list(range(state_length, state_length + len(positions)))
+
+
+def test_a_question_that_does_not_fit_is_refused(
+    tok: PreTrainedTokenizerFast,  # The tiny tokenizer
+    record: dict[str, Any],  # A record with three questions
+) -> None:
+    """A branch longer than the limit raises, and names its length."""
+    with pytest.raises(ValueError, match="branch too long"):
+        encode(tok, record, max_branch=80)

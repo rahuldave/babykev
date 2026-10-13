@@ -47,3 +47,11 @@ def test_no_question_sees_another_question(
     seg = torch.tensor(segments(*shape))
     siblings = (seg[:, None] != seg[None, :]) & (seg[:, None] > 0) & (seg[None, :] > 0)
     assert not (allowed(seg.tolist()) & siblings).any()
+
+
+@given(shapes)
+def test_no_token_sees_a_later_token(
+    shape: tuple[int, list[int]],  # The lengths of a state and of its questions
+) -> None:
+    """Nothing above the diagonal is allowed: a token never attends to a token after it."""
+    assert not torch.triu(allowed(segments(*shape)), diagonal=1).any()

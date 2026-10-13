@@ -73,6 +73,7 @@ yourself at any time.
 | `pyproject.toml`, `uv.lock` | The project: its name, its Python, its dependencies, the settings of its tools, and the exact versions to install |
 | `src/babykev/api.py` | The contract: the request and its three types of question as pydantic models, the text and options the model reads, and the answers made from its probabilities |
 | `src/babykev/cli.py` | The command `babykev` |
+| `src/babykev/model.py` | The model, a language model with a head that points at the options |
 | `data/cheese/sample.jsonl` | Five requests about cheese, one on each line. Every question has a `label`, the right answer |
 | `tests/unit/` | The unit tests of the contract and of the command. One test checks every line of the sample data against the contract |
 | `docs/` | The docs site. `just docs` builds it into `docs/_site`, with the reference made from the code |

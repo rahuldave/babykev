@@ -166,3 +166,10 @@ def test_record_keeps_the_state_and_the_order_of_questions():
         "Which milk?",
         "How firm?",
     ]
+
+
+def test_noul_becomes_no_then_yes():
+    """Option 0 is no and option 1 is yes, so the answer is the probability of option 1."""
+    record, meta = to_record(cheese_request())
+    assert record["questions"][0]["options"] == ["no", "yes"]
+    assert meta[0] == {"id": "blue", "type": "noul"}

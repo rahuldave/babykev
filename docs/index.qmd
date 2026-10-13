@@ -12,11 +12,13 @@ question has one of three types:
 - a `Choice` asks for one of several named options
 - a `Score` asks for a level on an ordered scale
 
-The code is in two modules:
+The code is in three modules:
 
 - `babykev.api` is the contract. `to_record` turns a request into the text and the options that the model
   reads. `to_answers` turns the probabilities of the model into an answer of the type of each question.
 - `babykev.cli` is the command `babykev`.
+- `babykev.model` is the model. `encode()` packs a record into one sequence of tokens, and a
+  `DecisionModel` scores every option of every question in one pass.
 
 Each build of the site makes the pages under Reference from the code. A page takes these parts from each
 function and each class:

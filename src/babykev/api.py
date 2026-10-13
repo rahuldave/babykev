@@ -16,17 +16,22 @@ MAX_OPTIONS = 255
 class Noul(BaseModel):
     """A question of yes or no. Its criteria, if it has them, describe false and true."""
 
-    type: Literal["noul"]
-    instructions: JSONContent
-    criteria: dict[str, JSONContent] | None = None
+    type: Literal["noul"] = Field(description="Marks the question as one of yes or no")
+    instructions: JSONContent = Field(description="The question, as text or as structured content")
+    criteria: dict[str, JSONContent] | None = Field(
+        default=None,
+        description="What no and yes mean, under the keys false and true. May be left out",
+    )
 
 
 class Choice(BaseModel):
     """A question answered by one of its options, named in its criteria."""
 
-    type: Literal["choice"]
-    instructions: JSONContent
-    criteria: dict[str, JSONContent]
+    type: Literal["choice"] = Field(description="Marks the question as a choice")
+    instructions: JSONContent = Field(description="The question, as text or as structured content")
+    criteria: dict[str, JSONContent] = Field(
+        description="The name of each option, with its description, or null if the name says enough"
+    )
 
     @model_validator(mode="after")
     def _check(self) -> Self:  # The choice itself, unchanged
@@ -39,9 +44,13 @@ class Choice(BaseModel):
 class Score(BaseModel):
     """A question answered by a level of a scale, whose criteria are the levels in order."""
 
-    type: Literal["score"]
-    instructions: JSONContent
-    criteria: list[JSONContent] = Field(min_length=2, max_length=MAX_OPTIONS)
+    type: Literal["score"] = Field(description="Marks the question as a score")
+    instructions: JSONContent = Field(description="The question, as text or as structured content")
+    criteria: list[JSONContent] = Field(
+        min_length=2,
+        max_length=MAX_OPTIONS,
+        description="The levels of the scale, the lowest first",
+    )
 
 
 Question = Noul | Choice | Score
@@ -50,8 +59,10 @@ Question = Noul | Choice | Score
 class SystemOneRequest(BaseModel):
     """One request: a state, and the questions to answer about it, each by its name."""
 
-    state: JSONContent
-    questions: dict[str, Question] = Field(min_length=1)
+    state: JSONContent = Field(description="The context: the document that the questions are about")
+    questions: dict[str, Question] = Field(
+        min_length=1, description="The questions, each under a name that the caller chooses"
+    )
 
 
 def render(

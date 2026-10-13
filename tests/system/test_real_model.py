@@ -10,6 +10,9 @@ import pytest
 
 from babykev.smoke import main
 
+# Every test of this file needs the network, the real weights and a device
+pytestmark = pytest.mark.system
+
 
 def test_the_real_model_answers_every_sample_question(
     capsys: pytest.CaptureFixture[str],  # What the smoke prints

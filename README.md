@@ -74,6 +74,29 @@ Run `just hook` once in each clone. It installs a git hook, which runs `just che
 `just check` runs every check of the project, and if one fails, git makes no commit. One check is a floor.
 The tests must run at least 90% of the code. You can run `just check` yourself at any time.
 
+## The images
+
+The `Dockerfile` builds two images from `uv.lock`, for any machine with Docker. Docker runs Linux, so
+an image runs the same on a Mac, on Linux and on Windows.
+
+| Image | Holds | Starts |
+|---|---|---|
+| dev | the whole project with every group, uv, just and git | a shell |
+| run | the program and the packages that it needs, with no tool of the developers | `babykev` |
+
+```
+just image build dev                          # docker build --target dev, named babykev-dev
+just image shell                              # a shell in the dev image, with this folder at /work
+just image shell --network none -- just check # every check, in the dev image, with no network
+just image build run
+just image run smoke                          # the smoke in the run image, on the CPU
+```
+
+The environment of an image is in `/opt/venv`, so the image never uses the `.venv` of a mounted folder.
+Both images mount the cache of the Hugging Face Hub of this machine at `/hf`, so the base model is
+downloaded once. An image holds the packages of the lockfile at the time of its build, so build it again
+after a change to `uv.lock`.
+
 ## What is here
 
 | Path | What it is |
@@ -92,6 +115,7 @@ The tests must run at least 90% of the code. You can run `just check` yourself a
 | `justfile` | Every task of the project, one recipe each. `just help` explains them |
 | `README.md` | This file |
 | `LICENSE`, `NOTICE` | The licence, and the credit to kev |
+| `Dockerfile`, `.dockerignore` | The two images, dev and run, and what a build never copies into them |
 | `.python-version` | The version of Python that the project uses |
 | `.gitignore` | The files that git does not track, for example `.venv` |
 | `.pre-commit-config.yaml` | The hooks that git runs before each commit, once `just hook` installs them. The last runs `just check` |

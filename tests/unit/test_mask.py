@@ -55,3 +55,16 @@ def test_no_token_sees_a_later_token(
 ) -> None:
     """Nothing above the diagonal is allowed: a token never attends to a token after it."""
     assert not torch.triu(allowed(segments(*shape)), diagonal=1).any()
+
+
+@given(shapes)
+def test_what_is_allowed_is_exactly_the_rule(
+    shape: tuple[int, list[int]],  # The lengths of a state and of its questions
+) -> None:
+    """Token i sees token j when j is not after i, and j is in the state or in i's question."""
+    seg = segments(*shape)
+    rule = [
+        [j <= i and (seg[j] == 0 or seg[j] == seg[i]) for j in range(len(seg))]
+        for i in range(len(seg))
+    ]
+    assert allowed(seg).tolist() == rule

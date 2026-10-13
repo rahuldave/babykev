@@ -88,7 +88,7 @@ The tests must run at least 90% of the code. You can run `just check` yourself a
 | `tests/system/` | The test of the real model, marked `system`. `just test -m system` runs it |
 | `tests/conftest.py` | The fixtures that every test can ask for: the tiny tokenizer, a tiny model and a record |
 | `tests/tiny.py` | A small tokenizer and backbone, built in memory, in place of the real ones |
-| `docs/` | The docs site. `just docs` builds it into `docs/_site`, with the reference made from the code |
+| `docs/` | The docs site. `just docs` builds it into `docs/_site`, with the reference made from the code. The two pages of `docs/guide/` explain the model and its mask |
 | `justfile` | Every task of the project, one recipe each. `just help` explains them |
 | `README.md` | This file |
 | `LICENSE`, `NOTICE` | The licence, and the credit to kev |

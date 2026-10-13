@@ -57,6 +57,12 @@ lint-config *args:
     just --fmt --check --unstable
     uv run yamllint --strict .
 
+# Check the types, by reading the code and not running it. Extra words go to ty: just types src
+[group('quality')]
+[no-exit-message]
+types *args:
+    @{{ if args == "help" { "just help types" } else { 'uv run ty check "$@"' } }}
+
 # Run the tests. Extra words go to pytest: just test -k render
 [group('quality')]
 [no-exit-message]

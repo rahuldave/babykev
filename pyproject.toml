@@ -41,6 +41,7 @@ docs = [
     "smalldocs>=0.1.5",
 ]
 lint = [
+    "actionlint-py>=1.7.12.25",
     "hadolint-bin>=2.15.1",
     "pre-commit>=4.7.0",
     "ruff>=0.17.1",

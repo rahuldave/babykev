@@ -26,6 +26,12 @@ wheels = [
 ]
 
 [[package]]
+name = "actionlint-py"
+version = "1.7.12.25"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/33/75/36ee89db39bb3620d1e46fe1f6ec77d6000d30ff45345699e51b4c850e83/actionlint_py-1.7.12.25.tar.gz", hash = "sha256:83f83be4cd317c79b15cbb7022787513a6994f00bfb2dd8da02fa4e62b4f640d", size = 12438, upload-time = "2026-09-22T16:24:42.477Z" }
+
+[[package]]
 name = "annotated-doc"
 version = "0.0.5"
 source = { registry = "https://pypi.org/simple" }
@@ -74,6 +80,7 @@ docs = [
     { name = "smalldocs" },
 ]
 lint = [
+    { name = "actionlint-py" },
     { name = "hadolint-bin" },
     { name = "pre-commit" },
     { name = "ruff" },
@@ -99,6 +106,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 docs = [{ name = "smalldocs", specifier = ">=0.1.5" }]
 lint = [
+    { name = "actionlint-py", specifier = ">=1.7.12.25" },
     { name = "hadolint-bin", specifier = ">=2.15.1" },
     { name = "pre-commit", specifier = ">=4.7.0" },
     { name = "ruff", specifier = ">=0.17.1" },

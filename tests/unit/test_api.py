@@ -291,3 +291,8 @@ def test_score_confidence_prefers_neighbouring_levels():
 def test_score_confidence_is_zero_for_a_guess():
     """Equal probabilities over the levels are a guess, as they are for a choice."""
     assert score_confidence([1 / 3] * 3) == pytest.approx(0)
+
+
+def test_score_confidence_is_one_for_a_single_level():
+    """One level leaves nothing to doubt. A request cannot have one, but the function answers it."""
+    assert score_confidence([1.0]) == 1.0
